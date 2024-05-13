@@ -1,23 +1,29 @@
-## ARL(Asset Reconnaissance Lighthouse)资产侦察灯塔系统
+# ARL(Asset Reconnaissance Lighthouse)资产侦察灯塔系统
 [![Python 3.6](https://img.shields.io/badge/python-3.6-yellow.svg)](https://www.python.org/)
 [![Docker Images](https://img.shields.io/docker/pulls/tophant/arl.svg)](https://hub.docker.com/r/tophant/arl)
 [![Github Issues](https://img.shields.io/github/issues/TophantTechnology/ARL.svg)](https://github.com/TophantTechnology/ARL/issues)
 [![Github Stars](https://img.shields.io/github/stars/TophantTechnology/ARL.svg)](https://github.com/TophantTechnology/ARL/stargazers)
 
-**注明：因为灯塔ARL的官方开源项目被删除了，所以建立了本开源项目留作备份，本项目所有内容均来自于[TophantTechnology/ARL](https://github.com/TophantTechnology/ARL)**
+## 1# 注明
+
+**因为灯塔ARL的官方开源项目被删除了，所以建立了本开源项目留作备份，本项目所有内容均来自于[TophantTechnology/ARL](https://github.com/TophantTechnology/ARL)**
 
 **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
 
+### 万分感谢各位师傅的Star
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Aabyss-Team/ARL&type=Date)](https://star-history.com/#Aabyss-Team/ARL&Date)
+
 资产灯塔，不仅仅是域名收集
 
-### 简介
+## 2# 简介
 
 旨在快速侦察与目标关联的互联网资产，构建基础资产信息库。
 协助甲方安全团队或者渗透测试人员有效侦察和检索资产，发现存在的薄弱点和攻击面。
 
 在开始使用之前，请务必阅读并同意[免责声明](Disclaimer.md)中的条款，否则请勿下载安装使用本系统。
 
-### 特性
+## 3# 特性
 1. 域名资产发现和整理
 2. IP/IP 段资产整理
 3. 端口扫描和服务识别
@@ -32,12 +38,12 @@
 12. nuclei PoC 调用
 13. [WebInfoHunter](https://tophanttechnology.github.io/ARL-doc/function_desc/web_info_hunter/) 调用和监控
 
-### 系统要求
+## 4# 系统要求
 
 目前暂不支持Windows，初次体验可采用Docker方式运行，长期使用建议采用源码安装方式运行。系统配置建议：CPU:4线程 内存:8G 带宽:10M。  
 由于自动资产发现过程中会有大量的的发包，建议采用云服务器可以带来更好的体验。
 
-### Docker 启动
+## 5# Docker 启动
 
 
 ```
@@ -56,40 +62,50 @@ Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安�
 
 详细说明可以参考: [Docker 环境安装 ARL](https://tophanttechnology.github.io/ARL-doc/system_install/)
 
-### 截图
+## 6# 截图
 
-1. 登录页面     
+一、登录页面
+
 默认端口5003 (https), 默认用户名密码admin/arlpass  
 ![登录页面](./image/login.png)
 
-2. 任务页面
+二、任务页面
+
 ![任务页面](./image/task.png)
 
-3. 子域名页面
+三、子域名页面
+
 ![子域名页面](./image/domain.png)
 
-4. 站点页面
+四、站点页面
+
 ![站点页面](./image/site.png)
 
-5. 资产监控页面
+五、资产监控页面
+
 ![资产监控页面](./image/monitor.png)
 详细说明可以参考：[资产分组和监控功能使用说明](https://github.com/TophantTechnology/ARL/wiki/%E8%B5%84%E4%BA%A7%E5%88%86%E7%BB%84%E5%92%8C%E7%9B%91%E6%8E%A7%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
 
-6. 策略页面
+六、策略页面
+
 ![策略配置页面](./image/policy.png)
 
-7. 筛选站点进行任务下发
+七、筛选站点进行任务下发
+
 ![筛选站点进行任务下发](./image/scan.png)
 详细说明可以参考： [2.3-新添加功能详细说明](https://github.com/TophantTechnology/ARL/wiki/ARL-2.3-%E6%96%B0%E6%B7%BB%E5%8A%A0%E5%8A%9F%E8%83%BD%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E)
 
-8. 计划任务
+八、计划任务
+
 ![计划任务](./image/task_scheduler.png)
 详细说明可以参考： [2.4.1-新添加功能详细说明](https://github.com/TophantTechnology/ARL/wiki/ARL-2.4.1-%E6%96%B0%E6%B7%BB%E5%8A%A0%E5%8A%9F%E8%83%BD%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E)
 
-9. GitHub 监控任务
+九、GitHub 监控任务
+
 ![GitHub 监控任务](./image/github_monitor.png)
 
-### 任务选项说明
+## 7# 任务选项说明
+
 | 编号 |      选项      |                                       说明                                        |
 | --- | -------------- | -------------------------------------------------------------------------------- |
 | 1    | 任务名称        | 任务名称                                                                          |
@@ -115,7 +131,7 @@ Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安�
 | 21   | WIH 调用      | 调用 WebInfoHunter 工具在JS中收集域名,AK/SK等信息                     |
 | 22   | WIH 监控任务   | 对资产分组中的站点周期性 调用 WebInfoHunter 工具在JS中域名等信息进行监控  |
 
-### 配置参数说明
+## 8# 配置参数说明
 
 Docker环境配置文件路径 `docker/config-docker.yaml`
 
@@ -142,7 +158,7 @@ Docker环境配置文件路径 `docker/config-docker.yaml`
 | WXWORK | 企业微信消息推送 |
 
 
-### 忘记密码重置
+## 9# 忘记密码重置
 
 当忘记了登录密码，可以执行下面的命令，然后使用 `admin/admin123` 就可以登录了。
 ```
@@ -153,7 +169,7 @@ db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') 
 ```
 
 
-### 源码安装
+## 10# 源码安装
 
 仅仅适配了 centos 7 ，且灯塔安装目录为/opt/ARL
 如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
@@ -165,11 +181,11 @@ chmod +x setup-arl.sh
 ```
 
 
-### FAQ
+## 11# FAQ
 
 请访问如下链接[FAQ](https://tophanttechnology.github.io/ARL-doc/faq/)
 
-### 写在最后
+## 12# 写在最后
 
 目前ARL仅仅只是完成了对资产的部分维度的发现和收集，自动发现过程中难免出现覆盖度不全、不精准、不合理等缺陷的地方还请反馈至我们。  
 
