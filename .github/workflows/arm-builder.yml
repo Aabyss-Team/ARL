@@ -1,0 +1,64 @@
+# This is a basic workflow to help you get started with Actions
+
+name: ARM-Builder
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+env:
+  IMAGE_URL: tophant/arl
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@master
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Download GeoLite2
+        run: |
+          pwd
+          mkdir -p docker/GeoLite2/
+          wget -O docker/GeoLite2/GeoLite2-ASN.mmdb  https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-ASN.mmdb
+          wget -O docker/GeoLite2/GeoLite2-City.mmdb  https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb
+          ls -al docker/GeoLite2
+
+      - name: Download NPoC
+        run: |
+          git clone https://github.com/1c3z/ARL-NPoC docker/ARL-NPoC
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+
+      - name: Build ARM64 image and push
+        run: |
+          VERSION=$(cat version.txt)
+
+          docker buildx build --file ./docker/ARMWorker/Dockerfile \
+            --platform linux/arm64/v8 \
+            --output type=docker \
+            --tag ${IMAGE_URL}:arm-${VERSION} .
+
+          docker push ${IMAGE_URL}:arm-${VERSION}
+
+          docker buildx imagetools inspect ${IMAGE_URL}:arm-${VERSION}
+
+

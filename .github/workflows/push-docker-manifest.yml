@@ -1,0 +1,59 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Push Docker Manifest
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+#  push:
+#    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  IMAGE_URL: tophant/arl
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@master
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v1
+
+      # Runs a single command using the runners shell
+      - name: Login Registry
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Pull images
+        run: |
+          export DOCKER_CLI_EXPERIMENTAL=enabled
+          docker pull ${IMAGE_URL}:$(cat version.txt)
+          docker pull ${IMAGE_URL}:arm-$(cat version.txt)
+
+      - name: Create and publish Docker manifests
+        run: |
+          export VERSION=$(cat version.txt)
+          export DOCKER_CLI_EXPERIMENTAL=enabled
+
+          docker manifest create ${IMAGE_URL}:latest \
+            --amend ${IMAGE_URL}:arm-${VERSION} \
+            --amend ${IMAGE_URL}:${VERSION}
+
+          docker manifest create ${IMAGE_URL}:${VERSION} \
+            --amend ${IMAGE_URL}:arm-${VERSION} \
+            --amend ${IMAGE_URL}:${VERSION}
+
+          docker manifest push ${IMAGE_URL}:${VERSION}
+          docker manifest push ${IMAGE_URL}:latest
+
+

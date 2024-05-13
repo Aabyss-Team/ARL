@@ -1,0 +1,28 @@
+name: pack Docker.zip file
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Pack files
+        run: |
+          cd docker
+          zip -r docker.zip .env arl_web.log arl_worker.log config-docker.yaml docker-compose.yml mongo-init.js
+
+      - name: Upload artifact
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: docker/docker.zip
+          tags: true
+          draft: true
+
