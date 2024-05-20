@@ -188,6 +188,29 @@ chmod +x setup-arl.sh
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
 
+#### 安装问题1：没有可用软件包 nginx
+
+在命令行执行：
+
+```
+sudo yum -y install epel-release
+sudo yum makecache
+sudo yum install nginx* --skip-broken
+```
+
+这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
+
+#### 安装问题2：脚本跑起来后运行任务显示 error
+
+要赋予 `/opt/ARL/app/tools/massdns` 目录的执行权限（给777也行）
+
+```
+cd /opt/ARL/app/tools/
+sudo chmod +x massdns
+```
+
+然后就可以愉快的玩耍了~~~
+
 ## 11# FAQ
 
 请访问如下链接[FAQ](https://tophanttechnology.github.io/ARL-doc/faq/)
