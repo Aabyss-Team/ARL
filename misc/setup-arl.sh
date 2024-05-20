@@ -51,7 +51,7 @@ if ! command -v wih &> /dev/null
 then
   echo "install wih ..."
   ## 安装 WIH
-  wget https://github.com/1c3z/arl_files/raw/master/wih/wih_linux_amd64 -O /usr/bin/wih && chmod +x /usr/bin/wih
+  wget https://github.com/Aabyss-Team/arl_files/blob/master/wih/wih_linux_amd64 -O /usr/bin/wih && chmod +x /usr/bin/wih
   wih --version
 fi
 
@@ -65,12 +65,12 @@ systemctl start rabbitmq-server
 
 if [ ! -d ARL ]; then
   echo "git clone ARL proj"
-  git clone https://github.com/TophantTechnology/ARL
+  git clone https://github.com/Aabyss-Team/ARL
 fi
 
 if [ ! -d "ARL-NPoC" ]; then
   echo "git clone ARL-NPoC proj"
-  git clone https://github.com/1c3z/ARL-NPoC
+  git clone https://github.com/Aabyss-Team/ARL-NPoC
 fi
 
 cd ARL-NPoC
@@ -81,25 +81,25 @@ cd ../
 
 if [ ! -f /usr/local/bin/ncrack ]; then
   echo "Download ncrack ..."
-  wget https://github.com/1c3z/arl_files/raw/master/ncrack -O /usr/local/bin/ncrack
+  wget https://github.com/Aabyss-Team/arl_files/blob/master/ncrack -O /usr/local/bin/ncrack
   chmod +x /usr/local/bin/ncrack
 fi
 
 mkdir -p /usr/local/share/ncrack
 if [ ! -f /usr/local/share/ncrack/ncrack-services ]; then
   echo "Download ncrack-services ..."
-  wget https://github.com/1c3z/arl_files/raw/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
+  wget https://github.com/Aabyss-Team/arl_files/blob/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
 fi
 
 mkdir -p /data/GeoLite2
 if [ ! -f /data/GeoLite2/GeoLite2-ASN.mmdb ]; then
   echo "download GeoLite2-ASN.mmdb ..."
-  wget https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-ASN.mmdb -O /data/GeoLite2/GeoLite2-ASN.mmdb
+  wget https://git.io/GeoLite2-ASN.mmdb -O /data/GeoLite2/GeoLite2-ASN.mmdb
 fi
 
 if [ ! -f /data/GeoLite2/GeoLite2-City.mmdb ]; then
   echo "download GeoLite2-City.mmdb ..."
-  wget https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb -O /data/GeoLite2/GeoLite2-City.mmdb
+  wget https://git.io/GeoLite2-City.mmdb -O /data/GeoLite2/GeoLite2-City.mmdb
 fi
 
 cd ARL
@@ -141,6 +141,7 @@ fi
 
 
 echo "gen cert ..."
+chmod +x ./docker/worker/gen_crt.sh
 ./docker/worker/gen_crt.sh
 
 
@@ -186,4 +187,3 @@ systemctl status arl-worker-github
 systemctl status arl-scheduler
 
 echo "install done"
-
