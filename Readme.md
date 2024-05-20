@@ -10,6 +10,7 @@
 - **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
 - **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
+- **推荐使用Docker安装，请看 [5# Docker启动](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#5-docker-%E5%90%AF%E5%8A%A8) 板块**
 - **在 `CentOS7` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [10# 源码安装](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#10-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85) 板块**
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
@@ -49,20 +50,25 @@
 
 ## 5# Docker 启动
 
+这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)
 
 ```
-cd /opt/
-mkdir docker_arl
-wget -O docker_arl/docker.zip https://github.com/TophantTechnology/ARL/releases/download/v2.6.2/docker.zip
-cd docker_arl
-unzip -o docker.zip
-docker volume create arl_db
-docker compose pull
-docker compose up -d
+//安装docker
+yum -y install docker
+
+//启动Docker服务
+systemctl start docker
+
+//拉取Docker镜像
+docker pull honmashironeko/arl-docker
+
+//运行Docker容器
+docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
 ```
 
-
-Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安装相关依赖
+- 接下来，前往ARL-Web页面：https://IP:5003/
+- 账号：admin，密码：arlpass
+- Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安装相关依赖
 
 详细说明可以参考: [Docker 环境安装 ARL](https://tophanttechnology.github.io/ARL-doc/system_install/)
 
