@@ -10,7 +10,7 @@
 - **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
 - **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
-- **在 `CentOS7` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
+- **在 `CentOS7` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [10# 源码安装](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#10-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85) 板块**
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
 
