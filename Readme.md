@@ -179,7 +179,7 @@ db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') 
 如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
 
 ```
-wget https://raw.githubusercontent.com/TophantTechnology/ARL/master/misc/setup-arl.sh
+wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
 chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
