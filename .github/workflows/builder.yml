@@ -36,13 +36,13 @@ jobs:
 
       - name: Download ncrack
         run: |
-          wget -O docker/ncrack  https://github.com/1c3z/arl_files/raw/master/ncrack
-          wget -O docker/ncrack-services https://github.com/1c3z/arl_files/raw/master/ncrack-services
+          wget -O docker/ncrack  https://github.com/Aabyss-Team/arl_files/raw/master/ncrack
+          wget -O docker/ncrack-services https://github.com/Aabyss-Team/arl_files/raw/master/ncrack-services
           chmod +x docker/ncrack
 
       - name: Download NPoC
         run: |
-          git clone https://github.com/1c3z/ARL-NPoC docker/ARL-NPoC
+          git clone https://github.com/Aabyss-Team/ARL-NPoC docker/ARL-NPoC
 
       # Runs a single command using the runners shell
       - name: Login Registry
