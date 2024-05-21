@@ -52,6 +52,8 @@
 
 这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)
 
+### 5.1 普通Docker版本安装
+
 ```
 //安装docker
 yum -y install docker
@@ -71,6 +73,34 @@ docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docke
 - Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安装相关依赖
 
 详细说明可以参考: [Docker 环境安装 ARL](https://tophanttechnology.github.io/ARL-doc/system_install/)
+
+### 5.2 魔改Docker版本安装
+
+魔改版本的账号：admin，密码：honmashironeko
+
+#### 5.2.1 魔改版本1
+
+```
+//拉取Docker镜像
+docker pull honmashironeko/arl-docker-portion
+
+//运行Docker容器
+docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
+```
+
+版本说明：ARL部分指纹版本，去除域名限制，并增加 5232 条指纹
+
+#### 5.2.2 魔改版本2
+
+```
+//拉取Docker镜像
+docker pull honmashironeko/arl-docker-all
+
+//运行Docker容器
+docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
+```
+
+版本说明：ARL完全指纹版本，去除域名限制，全量 6990 条指纹
 
 ## 6# 截图
 
