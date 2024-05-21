@@ -249,6 +249,8 @@ chmod +x setup-arl.sh
 sudo yum -y install epel-release
 sudo yum makecache
 sudo yum install nginx* --skip-broken
+sudo setenforce 0
+sudo systemctl restart nginx.service
 ```
 
 这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
