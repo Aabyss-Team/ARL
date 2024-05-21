@@ -102,6 +102,23 @@ docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docke
 
 版本说明：ARL完全指纹版本，去除域名限制，全量 6990 条指纹
 
+#### Docker安装问题-1：ACCESS_REFUSED
+
+具体为通过Docker方式部署后，添加任务报如下错误 `ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN.`，解决方法如下：
+
+先进入容器：`docker exec -it arl /bin/bash`
+
+执行以下命令：
+
+```
+rabbitmqctl add_user arl arlpassword
+rabbitmqctl set_user_tags arl administrator
+rabbitmqctl add_vhost arlv2host
+rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
+```
+
+经过测试，docker在PUSH上传后，其他地方PULL下载的时候会出现错误，因此需要这步操作。
+
 ## 6# 截图
 
 一、登录页面
