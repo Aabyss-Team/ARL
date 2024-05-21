@@ -67,7 +67,7 @@ docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docke
 ```
 
 - 接下来，前往ARL-Web页面：https://IP:5003/
-- 账号：admin，密码：arlpass
+- 账号：admin，密码（默认arlpass）：honmashironeko
 - Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安装相关依赖
 
 详细说明可以参考: [Docker 环境安装 ARL](https://tophanttechnology.github.io/ARL-doc/system_install/)
