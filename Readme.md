@@ -85,7 +85,7 @@ docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docke
 docker pull honmashironeko/arl-docker-portion
 
 //运行Docker容器
-docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
+docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-portion /usr/sbin/init
 ```
 
 版本说明：ARL部分指纹版本，去除域名限制，并增加 5232 条指纹
@@ -97,7 +97,7 @@ docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docke
 docker pull honmashironeko/arl-docker-all
 
 //运行Docker容器
-docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
+docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-all /usr/sbin/init
 ```
 
 版本说明：ARL完全指纹版本，去除域名限制，全量 6990 条指纹
