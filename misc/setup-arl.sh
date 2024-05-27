@@ -51,7 +51,7 @@ if ! command -v wih &> /dev/null
 then
   echo "install wih ..."
   ## 安装 WIH
-  wget https://github.com/Aabyss-Team/arl_files/blob/master/wih/wih_linux_amd64 -O /usr/bin/wih && chmod +x /usr/bin/wih
+  wget https://github.com/Aabyss-Team/arl_files/raw/master/wih/wih_linux_amd64 -O /usr/bin/wih && chmod +x /usr/bin/wih
   wih --version
 fi
 
@@ -81,14 +81,14 @@ cd ../
 
 if [ ! -f /usr/local/bin/ncrack ]; then
   echo "Download ncrack ..."
-  wget https://github.com/Aabyss-Team/arl_files/blob/master/ncrack -O /usr/local/bin/ncrack
+  wget https://github.com/Aabyss-Team/arl_files/raw/master/ncrack -O /usr/local/bin/ncrack
   chmod +x /usr/local/bin/ncrack
 fi
 
 mkdir -p /usr/local/share/ncrack
 if [ ! -f /usr/local/share/ncrack/ncrack-services ]; then
   echo "Download ncrack-services ..."
-  wget https://github.com/Aabyss-Team/arl_files/blob/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
+  wget https://github.com/Aabyss-Team/arl_files/raw/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
 fi
 
 mkdir -p /data/GeoLite2
