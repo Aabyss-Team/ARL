@@ -26,8 +26,8 @@ fi
 
 if [ ! -f /usr/local/bin/pip3.6 ]; then
   echo "install  pip3.6"
-  python3.6 -m ensurepip --default-pip
-  python3.6 -m pip install --upgrade pip
+  python3.6 -m ensurepip --default-pip 
+  python3.6 -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
   pip3.6 --version
 fi
 
@@ -75,8 +75,8 @@ fi
 
 cd ARL-NPoC
 echo "install poc requirements ..."
-pip3.6 install -r requirements.txt
-pip3.6 install -e .
+pip3.6 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip3.6 install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple
 cd ../
 
 if [ ! -f /usr/local/bin/ncrack ]; then
