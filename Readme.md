@@ -52,55 +52,36 @@
 
 这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)
 
-### 5.1 普通Docker版本安装
+```C
+//下载部署脚本项目
+git clone https://github.com/honmashironeko/ARL-docker.git
 
-```
-//安装docker
-yum -y install docker
+//进入项目文件夹
+cd ARL-docker/
 
-//启动Docker服务
-systemctl start docker
+//添加运行权限
+chmod +x setup_docker.sh
 
-//拉取Docker镜像
-docker pull honmashironeko/arl-docker
-
-//运行Docker容器
-docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
+//执行部署脚本
+bash setup_docker.sh
 ```
 
-- 接下来，前往ARL-Web页面：https://IP:5003/
-- 账号：admin，密码（默认arlpass）：honmashironeko
-- Ubuntu 下可以直接执行 `apt-get install docker.io docker-compose -y` 安装相关依赖
+Centos以外的版本请注意，脚本采用的是yum安装工具，如果是apt的话请运行：`apt install docker.io -y`
 
-详细说明可以参考: [Docker 环境安装 ARL](https://tophanttechnology.github.io/ARL-doc/system_install/)
+![Clip_2024-05-29_15-38-52](https://github.com/honmashironeko/ARL-docker/assets/139044047/ad96b024-194c-4711-8d4c-0079e535341a)
 
-### 5.2 魔改Docker版本安装
+输入数字确认安装版本：1 or 2
 
-魔改版本的账号：admin，密码：honmashironeko
+```C
+//安装完成之后进入容器
+docker exec -it arl /bin/bash
 
-#### 5.2.1 魔改版本1
-
-```
-//拉取Docker镜像
-docker pull honmashironeko/arl-docker-portion
-
-//运行Docker容器
-docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
+//开始完成ARL部署
+bash /root/arl/set.sh
 ```
 
-版本说明：ARL部分指纹版本，去除域名限制，并增加 5232 条指纹
-
-#### 5.2.2 魔改版本2
-
-```
-//拉取Docker镜像
-docker pull honmashironeko/arl-docker-all
-
-//运行Docker容器
-docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker /usr/sbin/init
-```
-
-版本说明：ARL完全指纹版本，去除域名限制，全量 6990 条指纹
+- 前往ARL-Web页面：`https://IP:5003/`
+- 账号：`admin`，密码：`honmashironeko`
 
 #### Docker安装问题-1：ACCESS_REFUSED
 
