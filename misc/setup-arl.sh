@@ -65,7 +65,7 @@ systemctl start rabbitmq-server
 
 if [ ! -d ARL ]; then
   echo "git clone ARL proj"
-  git clone https://github.com/Aabyss-Team/ARL
+  git clone https://github.com/msmoshang/ARL
 fi
 
 if [ ! -d "ARL-NPoC" ]; then
@@ -81,14 +81,14 @@ cd ../
 
 if [ ! -f /usr/local/bin/ncrack ]; then
   echo "Download ncrack ..."
-  wget https://raw.githubusercontent.com/Aabyss-Team/arl_files/master/ncrack -O /usr/local/bin/ncrack
+  wget https://raw.githubusercontent.com/msmoshang/arl_files/master/ncrack -O /usr/local/bin/ncrack
   chmod +x /usr/local/bin/ncrack
 fi
 
 mkdir -p /usr/local/share/ncrack
 if [ ! -f /usr/local/share/ncrack/ncrack-services ]; then
   echo "Download ncrack-services ..."
-  wget https://raw.githubusercontent.com/Aabyss-Team/arl_files/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
+  wget https://raw.githubusercontent.com/msmoshang/arl_files/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
 fi
 
 mkdir -p /data/GeoLite2
@@ -170,6 +170,7 @@ if [ ! -f /etc/systemd/system/arl-scheduler.service ]; then
 fi
 
 #添加指纹
+
 
 
 #给massdns添加执行权限
