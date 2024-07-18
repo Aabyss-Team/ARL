@@ -81,14 +81,14 @@ cd ../
 
 if [ ! -f /usr/local/bin/ncrack ]; then
   echo "Download ncrack ..."
-  wget https://github.com/Aabyss-Team/arl_files/blob/master/ncrack -O /usr/local/bin/ncrack
+  wget https://raw.githubusercontent.com/Aabyss-Team/arl_files/master/ncrack -O /usr/local/bin/ncrack
   chmod +x /usr/local/bin/ncrack
 fi
 
 mkdir -p /usr/local/share/ncrack
 if [ ! -f /usr/local/share/ncrack/ncrack-services ]; then
   echo "Download ncrack-services ..."
-  wget https://github.com/Aabyss-Team/arl_files/blob/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
+  wget https://raw.githubusercontent.com/Aabyss-Team/arl_files/master/ncrack-services -O /usr/local/share/ncrack/ncrack-services
 fi
 
 mkdir -p /data/GeoLite2
