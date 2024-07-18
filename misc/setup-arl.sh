@@ -40,9 +40,9 @@ fi
 
 if ! command -v nuclei &> /dev/null
 then
-  echo "install nuclei_3.2.4 ..."
-  wget https://github.com/projectdiscovery/nuclei/releases/download/v3.2.4/nuclei_3.2.4_linux_amd64.zip
-  unzip nuclei_3.2.4_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.2.4_linux_amd64.zip
+  echo "install nuclei_3.3.0 ..."
+  wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.0/nuclei_3.3.0_linux_amd64.zip
+  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.2.4_linux_amd64.zip
   nuclei -ut
 fi
 
@@ -51,7 +51,7 @@ if ! command -v wih &> /dev/null
 then
   echo "install wih ..."
   ## 安装 WIH
-  wget https://github.com/Aabyss-Team/arl_files/blob/master/wih/wih_linux_amd64 -O /usr/bin/wih && chmod +x /usr/bin/wih
+  wget https://raw.githubusercontent.com/msmoshang/arl_files/master/wih/wih_linux_amd64 -O /usr/bin/wih && chmod +x /usr/bin/wih
   wih --version
 fi
 
