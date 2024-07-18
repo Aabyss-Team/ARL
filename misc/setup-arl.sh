@@ -169,6 +169,14 @@ if [ ! -f /etc/systemd/system/arl-scheduler.service ]; then
   cp misc/arl-scheduler.service /etc/systemd/system/
 fi
 
+#添加指纹
+
+
+#给massdns添加执行权限
+echo "massdns run"
+cd /opt/ARL/app/tools/
+chmod +x massdns
+
 echo "start arl services ..."
 systemctl enable arl-web
 systemctl start arl-web
