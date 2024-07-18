@@ -170,7 +170,7 @@ if [ ! -f /etc/systemd/system/arl-scheduler.service ]; then
 fi
 #添加指纹
 cd /opt/ARL/misc
-if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json];
+if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ];
 then
  echo "ADD finger"
  python3.6 ARl-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
