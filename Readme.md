@@ -103,7 +103,7 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 经过测试，docker在PUSH上传后，其他地方PULL下载的时候会出现错误，因此需要这步操作。
 ## 6# 源码安装
 
-适配了 centos 7  and Ubuntu20.04，灯塔安装目录为/opt/ARL
+适配了 `centos 7`  and `Ubuntu20.04`，灯塔安装目录为/opt/ARL
 如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
 
 ```
