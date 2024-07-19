@@ -114,7 +114,7 @@ chmod +x setup-arl.sh
 
 **在 `CentOS7`  和 `Ubuntu20.04`系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
 
-> 本项目已经替换完毕：暂时只支持CentOS7  和`Ubuntu20.04系统
+> 本项目已经替换完毕：暂时只支持CentOS7 和 Ubuntu20.04系统
 
 ## 7# 截图
 
