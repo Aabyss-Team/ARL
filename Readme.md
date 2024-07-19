@@ -107,14 +107,14 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
 
 ```
-wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
+wget https://raw.githubusercontent.com/msmoshang/ARL/master/misc/setup-arl.sh
 chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
 
 **在 `CentOS7`  和 `Ubuntu20.04`系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
 
-> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+> 本项目已经替换完毕：暂时只支持CentOS7  和`Ubuntu20.04系统
 
 ## 7# 截图
 
