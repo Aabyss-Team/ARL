@@ -112,23 +112,9 @@ chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
 
-**在 `CentOS7` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
+**在 `CentOS7`  和 `Ubuntu20.04`系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
-
-#### 安装问题1：没有可用软件包 nginx
-
-在命令行执行：
-```
-sudo yum -y install epel-release
-sudo yum makecache
-sudo yum install nginx* --skip-broken
-sudo setenforce 0
-sudo systemctl restart nginx.service
-```
-这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
-
-然后就可以愉快的玩耍了~~~
 
 ## 7# 截图
 
