@@ -1,5 +1,5 @@
 # 此项目是在https://github.com/Aabyss-Team/ARL 分支而来
-简单做了一个修复，自动添加指纹添加Ubuntu20.04系统的一键源码安装脚本
+简单做了一个修复，自动添加指纹，添加Ubuntu20.04系统的一键源码安装脚本
 
 添加指纹脚本来源于
 https://github.com/loecho-sec/ARL-Finger-ADD
