@@ -42,7 +42,7 @@ if ! command -v nuclei &> /dev/null
 then
   echo "install nuclei_3.3.0 ..."
   wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.0/nuclei_3.3.0_linux_amd64.zip
-  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.2.4_linux_amd64.zip
+  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
   nuclei -ut
 fi
 
