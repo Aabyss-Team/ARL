@@ -6,7 +6,7 @@ https://github.com/loecho-sec/ARL-Finger-ADD
 
 ## 1# 注明
 
-- **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [## 6# 源码安装](https://github.com/msmoshang/ARL?tab=readme-ov-file#6-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85)) 板块**
+- **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [# 2# 源码安装](https://github.com/msmoshang/ARL?tab=readme-ov-file#2-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85)) 板块**
 
 
 ## 2# 源码安装
