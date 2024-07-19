@@ -6,11 +6,10 @@ https://github.com/loecho-sec/ARL-Finger-ADD
 
 ## 1# 注明
 
-- **使用Docker安装，请看 [5# Docker启动](https://github.com/msmoshang/ARL?tab=readme-ov-file#5-docker-%E5%90%AF%E5%8A%A8) 板块**
 - **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [## 6# 源码安装](https://github.com/msmoshang/ARL?tab=readme-ov-file#6-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85)) 板块**
 
 
-## 6# 源码安装
+## 2# 源码安装
 
 适配了 `centos 7`  and `Ubuntu20.04`，灯塔安装目录为/opt/ARL
 如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
@@ -25,7 +24,7 @@ chmod +x setup-arl.sh
 
 > 本项目已经替换完毕：暂时只支持CentOS7 和 Ubuntu20.04系统
 
-## 7# 截图
+## 3# 截图
 
 一、登录页面
 
@@ -67,7 +66,7 @@ chmod +x setup-arl.sh
 
 ![GitHub 监控任务](./image/github_monitor.png)
 
-## 8# 任务选项说明
+## 4# 任务选项说明
 
 | 编号 |      选项      |                                       说明                                        |
 | --- | -------------- | -------------------------------------------------------------------------------- |
@@ -94,7 +93,7 @@ chmod +x setup-arl.sh
 | 21   | WIH 调用      | 调用 WebInfoHunter 工具在JS中收集域名,AK/SK等信息                     |
 | 22   | WIH 监控任务   | 对资产分组中的站点周期性 调用 WebInfoHunter 工具在JS中域名等信息进行监控  |
 
-## 9# 配置参数说明
+## 5# 配置参数说明
 
 Docker环境配置文件路径 `docker/config-docker.yaml`
 
@@ -121,7 +120,7 @@ Docker环境配置文件路径 `docker/config-docker.yaml`
 | WXWORK | 企业微信消息推送 |
 
 
-## 10# 忘记密码重置
+## 6# 忘记密码重置
 
 当忘记了登录密码，可以执行下面的命令，然后使用 `admin/admin123` 就可以登录了。
 ```
@@ -132,11 +131,11 @@ db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') 
 ```
 
 
-## 11# FAQ
+## 7# FAQ
 
 请访问如下链接[FAQ](https://tophanttechnology.github.io/ARL-doc/faq/)
 
-## 12# 写在最后
+## 8# 写在最后
 
 目前ARL仅仅只是完成了对资产的部分维度的发现和收集，自动发现过程中难免出现覆盖度不全、不精准、不合理等缺陷的地方还请反馈至我们。  
 
