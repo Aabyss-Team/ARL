@@ -101,8 +101,36 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 ```
 
 经过测试，docker在PUSH上传后，其他地方PULL下载的时候会出现错误，因此需要这步操作。
+## 6# 源码安装
 
-## 6# 截图
+适配了 centos 7  and Ubuntu20.04，灯塔安装目录为/opt/ARL
+如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
+
+```
+wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
+chmod +x setup-arl.sh
+./setup-arl.sh
+```
+
+**在 `CentOS7` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
+
+> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+
+#### 安装问题1：没有可用软件包 nginx
+
+在命令行执行：
+```
+sudo yum -y install epel-release
+sudo yum makecache
+sudo yum install nginx* --skip-broken
+sudo setenforce 0
+sudo systemctl restart nginx.service
+```
+这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
+
+然后就可以愉快的玩耍了~~~
+
+## 7# 截图
 
 一、登录页面
 
@@ -144,7 +172,7 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 
 ![GitHub 监控任务](./image/github_monitor.png)
 
-## 7# 任务选项说明
+## 8# 任务选项说明
 
 | 编号 |      选项      |                                       说明                                        |
 | --- | -------------- | -------------------------------------------------------------------------------- |
@@ -171,7 +199,7 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 | 21   | WIH 调用      | 调用 WebInfoHunter 工具在JS中收集域名,AK/SK等信息                     |
 | 22   | WIH 监控任务   | 对资产分组中的站点周期性 调用 WebInfoHunter 工具在JS中域名等信息进行监控  |
 
-## 8# 配置参数说明
+## 9# 配置参数说明
 
 Docker环境配置文件路径 `docker/config-docker.yaml`
 
@@ -198,7 +226,7 @@ Docker环境配置文件路径 `docker/config-docker.yaml`
 | WXWORK | 企业微信消息推送 |
 
 
-## 9# 忘记密码重置
+## 10# 忘记密码重置
 
 当忘记了登录密码，可以执行下面的命令，然后使用 `admin/admin123` 就可以登录了。
 ```
@@ -208,38 +236,6 @@ db.user.drop()
 db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') })
 ```
 
-
-## 10# 源码安装
-
-仅仅适配了 centos 7 ，且灯塔安装目录为/opt/ARL
-如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
-
-```
-wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
-chmod +x setup-arl.sh
-./setup-arl.sh
-```
-
-**在 `CentOS7` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
-
-> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
-
-#### 安装问题1：没有可用软件包 nginx
-
-在命令行执行：
-
-```
-sudo yum -y install epel-release
-sudo yum makecache
-sudo yum install nginx* --skip-broken
-sudo setenforce 0
-sudo systemctl restart nginx.service
-```
-
-这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
-
-
-然后就可以愉快的玩耍了~~~
 
 ## 11# FAQ
 
