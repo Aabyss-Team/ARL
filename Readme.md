@@ -1,5 +1,7 @@
 # 此项目是在https://github.com/Aabyss-Team/ARL 分支而来
 简单做了一个修复，自动添加指纹后续会添加Ubuntu等系统的一键源码安装脚本
+添加指纹脚本来源于
+https://github.com/loecho-sec/ARL-Finger-ADD
 # ARL(Asset Reconnaissance Lighthouse)资产侦察灯塔系统
 [![Python 3.6](https://img.shields.io/badge/python-3.6-yellow.svg)](https://www.python.org/)
 [![Docker Images](https://img.shields.io/docker/pulls/tophant/arl.svg)](https://hub.docker.com/r/tophant/arl)
