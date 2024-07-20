@@ -604,10 +604,10 @@ echo "请选择要安装的版本："
 echo "1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹"
 echo "2) arl-docker-initial：ARL初始版本，仅去除域名限制。"
 echo "3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。"
-read -p "请输入选项（1-2）：" version_choice
-case $version_choice in
+read -p "请输入选项（1-2）：" docker_id
+case $docker_id in
     1)
-        echo "正在拉取 Docker 镜像：arl-docker-initial..."
+        echo "正在拉取 Docker 镜像：moshangms/arl-test..."
         docker pull moshangms/arl-test:latest
         echo "正在运行 Docker 容器..."
         docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
