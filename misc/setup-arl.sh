@@ -575,6 +575,7 @@ fixed_check_osver
 case "$os_ver" in
     "CentOS Linux 7")
         if [ "$VERSION_ID" == "7" ]; then
+            echo "$os_ver"
             check_selinux
             install_for_centos
         else
@@ -584,6 +585,7 @@ case "$os_ver" in
         ;;
     "Ubuntu 20.04")
         if [ "$VERSION_ID" == "20.04" ]; then
+            echo ""$os_ver""
             install_for_ubuntu
         else
             echo "暂时仅支持Ubuntu 20.04"
