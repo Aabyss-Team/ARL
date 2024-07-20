@@ -4,6 +4,11 @@
 添加指纹脚本来源于
 https://github.com/loecho-sec/ARL-Finger-ADD
 
+## 简介 ##
+旨在快速侦察与目标关联的互联网资产，构建基础资产信息库。 协助甲方安全团队或者渗透测试人员有效侦察和检索资产，发现存在的薄弱点和攻击面。
+
+在开始使用之前，请务必阅读并同意免责声明中的条款，否则请勿下载安装使用本系统。
+
 ## 1# 注明
 
 - **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [2# 源码安装](https://github.com/msmoshang/ARL?tab=readme-ov-file#2-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85)) 板块**
