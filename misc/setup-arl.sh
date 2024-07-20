@@ -611,7 +611,7 @@ case $version_choice in
         docker pull moshangms/arl-test:latest
         echo "正在运行 Docker 容器..."
         docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
-        docker exec -it arl /bin/bash -c "
+        sleep 10 && docker exec -it arl /bin/bash -c "
         rabbitmqctl add_user arl arlpassword
         rabbitmqctl set_user_tags arl administrator
         rabbitmqctl add_vhost arlv2host
