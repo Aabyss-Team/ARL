@@ -9,10 +9,28 @@ https://github.com/loecho-sec/ARL-Finger-ADD
 
 在开始使用之前，请务必阅读并同意[免责声明](https://github.com/msmoshang/ARL/blob/master/Disclaimer.md)中的条款，否则请勿下载安装使用本系统。
 
+# ARL(Asset Reconnaissance Lighthouse)资产侦察灯塔系统
+[![Python 3.6](https://img.shields.io/badge/python-3.6-yellow.svg)](https://www.python.org/)
+[![Docker Images](https://img.shields.io/docker/pulls/tophant/arl.svg)](https://hub.docker.com/r/tophant/arl)
+[![Github Issues](https://img.shields.io/github/issues/TophantTechnology/ARL.svg)](https://github.com/TophantTechnology/ARL/issues)
+[![Github Stars](https://img.shields.io/github/stars/TophantTechnology/ARL.svg)](https://github.com/TophantTechnology/ARL/stargazers)
+
 ## 1# 注明
 
+- **因为灯塔ARL的官方开源项目被删除了，所以建立了本开源项目留作备份，本项目所有内容均来自于[TophantTechnology/ARL](https://github.com/TophantTechnology/ARL)最新版本**
+- **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
+- **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
+- **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
+- **推荐使用Docker安装，请看 [5# Docker启动](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#5-docker-%E5%90%AF%E5%8A%A8) 板块**
 - **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [2# 源码安装](https://github.com/msmoshang/ARL?tab=readme-ov-file#2-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85)) 板块**
 
+> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+
+### 万分感谢各位师傅的Star
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Aabyss-Team/ARL&type=Date)](https://star-history.com/#Aabyss-Team/ARL&Date)
+
+资产灯塔，不仅仅是域名收集
 
 ## 2# 源码安装
 
@@ -27,9 +45,81 @@ chmod +x setup-arl.sh
 
 **在 `CentOS7`  和 `Ubuntu20.04`系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
 
-> 本项目已经替换完毕：暂时只支持CentOS7 和 Ubuntu20.04系统
+> 本项目已经替换完毕：暂时只支持 `CentOS7` 和 `Ubuntu20.04` 系统
 
-## 3# 截图
+## 3# 特性
+1. 域名资产发现和整理
+2. IP/IP 段资产整理
+3. 端口扫描和服务识别
+4. WEB 站点指纹识别
+5. 资产分组管理和搜索
+6. 任务策略配置
+7. 计划任务和周期任务
+8. Github 关键字监控
+9. 域名/IP 资产监控
+10. 站点变化监控
+11. 文件泄漏等风险检测
+12. nuclei PoC 调用
+13. [WebInfoHunter](https://tophanttechnology.github.io/ARL-doc/function_desc/web_info_hunter/) 调用和监控
+
+## 4# 系统要求
+
+目前暂不支持Windows，初次体验可采用Docker方式运行，长期使用建议采用源码安装方式运行。系统配置建议：CPU:4线程 内存:8G 带宽:10M。  
+由于自动资产发现过程中会有大量的的发包，建议采用云服务器可以带来更好的体验。
+
+## 5# Docker 启动
+
+这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)
+
+```C
+//下载部署脚本项目
+git clone https://github.com/honmashironeko/ARL-docker.git
+
+//进入项目文件夹
+cd ARL-docker/
+
+//添加运行权限
+chmod +x setup_docker.sh
+
+//执行部署脚本
+bash setup_docker.sh
+```
+
+Centos以外的版本请注意，脚本采用的是yum安装工具，如果是apt的话请运行：`apt install docker.io -y`
+
+![Clip_2024-05-29_15-38-52](https://github.com/honmashironeko/ARL-docker/assets/139044047/ad96b024-194c-4711-8d4c-0079e535341a)
+
+输入数字确认安装版本：1 or 2
+
+```C
+//安装完成之后进入容器
+docker exec -it arl /bin/bash
+
+//开始完成ARL部署
+bash /root/arl/set.sh
+```
+
+- 前往ARL-Web页面：`https://IP:5003/`
+- 账号：`admin`，密码：`honmashironeko`
+
+#### Docker安装问题-1：ACCESS_REFUSED
+
+具体为通过Docker方式部署后，添加任务报如下错误 `ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN.`，解决方法如下：
+
+先进入容器：`docker exec -it arl /bin/bash`
+
+执行以下命令：
+
+```
+rabbitmqctl add_user arl arlpassword
+rabbitmqctl set_user_tags arl administrator
+rabbitmqctl add_vhost arlv2host
+rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
+```
+
+经过测试，docker在PUSH上传后，其他地方PULL下载的时候会出现错误，因此需要这步操作。
+
+## 6# 截图
 
 一、登录页面
 
@@ -71,7 +161,7 @@ chmod +x setup-arl.sh
 
 ![GitHub 监控任务](./image/github_monitor.png)
 
-## 4# 任务选项说明
+## 7# 任务选项说明
 
 | 编号 |      选项      |                                       说明                                        |
 | --- | -------------- | -------------------------------------------------------------------------------- |
@@ -98,7 +188,7 @@ chmod +x setup-arl.sh
 | 21   | WIH 调用      | 调用 WebInfoHunter 工具在JS中收集域名,AK/SK等信息                     |
 | 22   | WIH 监控任务   | 对资产分组中的站点周期性 调用 WebInfoHunter 工具在JS中域名等信息进行监控  |
 
-## 5# 配置参数说明
+## 8# 配置参数说明
 
 Docker环境配置文件路径 `docker/config-docker.yaml`
 
@@ -125,7 +215,7 @@ Docker环境配置文件路径 `docker/config-docker.yaml`
 | WXWORK | 企业微信消息推送 |
 
 
-## 6# 忘记密码重置
+## 9# 忘记密码重置
 
 当忘记了登录密码，可以执行下面的命令，然后使用 `admin/admin123` 就可以登录了。
 ```
@@ -136,11 +226,51 @@ db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') 
 ```
 
 
-## 7# FAQ
+## 10# 源码安装
+
+仅仅适配了 centos 7 ，且灯塔安装目录为/opt/ARL
+如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
+
+```
+wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
+chmod +x setup-arl.sh
+./setup-arl.sh
+```
+
+**在 `CentOS7` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
+
+> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+
+#### 安装问题1：没有可用软件包 nginx
+
+在命令行执行：
+
+```
+sudo yum -y install epel-release
+sudo yum makecache
+sudo yum install nginx* --skip-broken
+sudo setenforce 0
+sudo systemctl restart nginx.service
+```
+
+这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
+
+#### 安装问题2：脚本跑起来后运行任务显示 error
+
+要赋予 `/opt/ARL/app/tools/massdns` 目录的执行权限（给777也行）
+
+```
+cd /opt/ARL/app/tools/
+sudo chmod +x massdns
+```
+
+然后就可以愉快的玩耍了~~~
+
+## 11# FAQ
 
 请访问如下链接[FAQ](https://tophanttechnology.github.io/ARL-doc/faq/)
 
-## 8# 写在最后
+## 12# 写在最后
 
 目前ARL仅仅只是完成了对资产的部分维度的发现和收集，自动发现过程中难免出现覆盖度不全、不精准、不合理等缺陷的地方还请反馈至我们。  
 
