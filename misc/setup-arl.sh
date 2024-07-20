@@ -116,21 +116,32 @@ fi
 
 check_run_docker() {
 status=$(systemctl is-active docker)
-  if [ "$status" = "active" ] ; then
+if [ "$status" = "active" ] ; then
       echo "Docker运行正常"   
-  elif [ "$status" = "inactive" ] ; then
+elif [ "$status" = "inactive" ] || [ "$status" = "unknown" ] ; then
     echo "Docker 服务未运行，正在尝试启动"
     run=$(systemctl start docker)
-    if [ "$?" = "0" ] ; then
+  if [ "$?" = "0" ] ; then
         echo "Docker 启动成功"
     else
         echo "Docker 启动失败"
         exit 1
-    fi
+fi
 else
     echo "无法确定Docker状态"
     exit 1
 fi
+}
+
+uninstall_docker(){
+
+# 检查容器是否在运行中，如果是，强制停止容器
+if [ "$(docker ps -aq -f name=arl)" ]; then
+    docker stop arl
+    docker rm -f arl
+    echo "容器 arl 停止"
+fi
+docker rmi moshangms/arl-test:latest
 }
 
 install_for_ubuntu() {
@@ -586,32 +597,11 @@ case "$os_ver" in
 esac
 }
 
-uninstall_docker(){
-
-# 检查容器是否在运行中，如果是，强制停止容器
-if [ "$(docker ps -aq -f name=arl)" ]; then
-    docker stop arl
-    docker rm -f arl
-    echo "容器 arl 停止"
-fi
-# 检查镜像 honmashironeko/arl-docker 是否已经存在
-if [ "$(docker images -q honmashironeko/arl-docker-initial)" == "" ]; then
-    # 如果镜像不存在，检查另一个镜像 honmashironeko/arl-docker-all 是否存在
-    if [ "$(docker images -q honmashironeko/arl-docker-all)" == "" ]; then
-        echo "镜像 honmashironeko/arl-docker-i 和 honmashironeko/arl-docker-all 都不存在"
-    else 
-        docker rmi honmashironeko/arl-docker-all
-        echo "镜像 honmashironeko/arl-docker-all 已删除"
-    fi
-else
-    docker rmi honmashironeko/arl-docker-initial
-    echo "镜像 honmashironeko/arl-docker-initial 已删除"
-fi
-}
-
 docker_install_menu(){
 echo "请选择要安装的版本："
-echo "1) arl-docker-initial：ARL初始版本，仅去除域名限制,5000+指纹"
+echo "1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹"
+echo "2) arl-docker-initial：ARL初始版本，仅去除域名限制。"
+echo "3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。"
 read -p "请输入选项（1-2）：" version_choice
 case $version_choice in
     1)
@@ -619,6 +609,18 @@ case $version_choice in
         docker pull moshangms/arl-test:latest
         echo "正在运行 Docker 容器..."
         docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
+        ;;
+    2)
+        echo "正在拉取 Docker 镜像：arl-docker-initial..."
+        docker pull honmashironeko/arl-docker-initial
+        echo "正在运行 Docker 容器..."
+        docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-initial /usr/sbin/init
+        ;;
+    3)
+        echo "正在拉取 Docker 镜像：arl-docker-all..."
+        docker pull honmashironeko/arl-docker-all
+        echo "正在运行 Docker 容器..."
+        docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-all /usr/sbin/init
         ;;
     *)
         echo "无效的输入，脚本将退出。"
@@ -645,6 +647,7 @@ case $code_id in
         docker_install_menu
         ;;
     3)
+        echo "暂时未完成"
         uninstall_docker
         ;;
     4)
