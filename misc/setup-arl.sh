@@ -102,7 +102,7 @@ elif [ "$ID" == "ubuntu" ]; then
         sudo install -m 0755 -d /etc/apt/keyrings
         sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
         sudo chmod a+r /etc/apt/keyrings/docker.asc
-        echo "deb [arch=$(dpkg --print-architecture)signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs)stable" | tee /etc/apt/sources.list.d/docker.list
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update -y
         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
         docker --version
@@ -611,6 +611,12 @@ case $version_choice in
         docker pull moshangms/arl-test:latest
         echo "正在运行 Docker 容器..."
         docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
+        docker exec -it arl /bin/bash -c "
+        rabbitmqctl add_user arl arlpassword
+        rabbitmqctl set_user_tags arl administrator
+        rabbitmqctl add_vhost arlv2host
+        rabbitmqctl set_permissions -p arlv2host arl '.*' '.*' '.*'
+        "
         ;;
     2)
         echo "正在拉取 Docker 镜像：arl-docker-initial..."
