@@ -11,7 +11,7 @@
 - **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
 - **推荐使用Docker安装，请看 [5# Docker启动](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#5-docker-%E5%90%AF%E5%8A%A8) 板块**
-- **在 `CentOS7` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [10# 源码安装](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#10-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85) 板块**
+- **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [10# 源码安装](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#10-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85) 板块**
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
 
@@ -209,7 +209,7 @@ db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') 
 
 ## 10# 源码安装
 
-仅仅适配了 centos 7 ，且灯塔安装目录为/opt/ARL
+适配了 `centos 7` 和 `Ubuntu20.04` ，且灯塔安装目录为/opt/ARL
 如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
 
 ```
@@ -218,34 +218,12 @@ chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
 
-**在 `CentOS7` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
+**在 `CentOS7`  和 `Ubuntu20.04` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
+新增了指纹添加，添加代码项目来自https://github.com/loecho-sec/ARL-Finger-ADD
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
 
-#### 安装问题1：没有可用软件包 nginx
 
-在命令行执行：
-
-```
-sudo yum -y install epel-release
-sudo yum makecache
-sudo yum install nginx* --skip-broken
-sudo setenforce 0
-sudo systemctl restart nginx.service
-```
-
-这个是玄学问题，有时候能碰到这个报错，有时候又碰不到。。
-
-#### 安装问题2：脚本跑起来后运行任务显示 error
-
-要赋予 `/opt/ARL/app/tools/massdns` 目录的执行权限（给777也行）
-
-```
-cd /opt/ARL/app/tools/
-sudo chmod +x massdns
-```
-
-然后就可以愉快的玩耍了~~~
 
 ## 11# FAQ
 
@@ -254,4 +232,3 @@ sudo chmod +x massdns
 ## 12# 写在最后
 
 目前ARL仅仅只是完成了对资产的部分维度的发现和收集，自动发现过程中难免出现覆盖度不全、不精准、不合理等缺陷的地方还请反馈至我们。  
-
