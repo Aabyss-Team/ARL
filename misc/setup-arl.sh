@@ -98,16 +98,29 @@ elif [ "$ID" == "ubuntu" ]; then
     if ! command -v docker &> /dev/null;then
         sudo apt-get update
         sudo apt-get install ca-certificates curl
-
         sudo install -m 0755 -d /etc/apt/keyrings
         sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
         sudo chmod a+r /etc/apt/keyrings/docker.asc
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update -y
         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
         docker --version
         check_run_docker
     fi
+elif [ "$ID" = "debian"]; then
+    if ! command -v docker &> /dev/null;then
+    echo 
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
+    sudo apt-get update -y
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+    docker --version
+    check_run_docker
+    
 else
     echo "不支持的操作系统."
     exit 1
@@ -152,7 +165,7 @@ echo "cd /opt/"
 mkdir -p /opt/
 cd /opt/
 
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/4.4 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME")/mongodb-org/4.4 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
   if ! command -v curl &> /dev/null; then
     echo "install curl ..."
@@ -604,14 +617,14 @@ echo "请选择要安装的版本："
 echo "1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹"
 echo "2) arl-docker-initial：ARL初始版本，仅去除域名限制。"
 echo "3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。"
-read -p "请输入选项（1-2）：" docker_id
-case $docker_id in
+read -p "请输入选项（1-2）：" version_choice
+case $version_choice in
     1)
-        echo "正在拉取 Docker 镜像：moshangms/arl-test..."
+        echo "正在拉取 Docker 镜像：arl-docker-initial..."
         docker pull moshangms/arl-test:latest
         echo "正在运行 Docker 容器..."
         docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
-        sleep 10 && docker exec -it arl /bin/bash -c "
+        docker exec -it arl /bin/bash -c "
         rabbitmqctl add_user arl arlpassword
         rabbitmqctl set_user_tags arl administrator
         rabbitmqctl add_vhost arlv2host
