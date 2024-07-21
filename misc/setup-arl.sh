@@ -96,6 +96,7 @@ if [ "$ID" = "centos" ] ; then
     fi
 elif [ "$ID" == "ubuntu" ]; then
     if ! command -v docker &> /dev/null;then
+        echo "Docker 未安装，正在进行安装..."
         sudo apt-get update
         sudo apt-get install ca-certificates curl
         sudo install -m 0755 -d /etc/apt/keyrings
@@ -106,21 +107,29 @@ elif [ "$ID" == "ubuntu" ]; then
         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
         docker --version
         check_run_docker
+      else
+        echo "Docker 已经安装"
+        echo "Docker版本为： $(docker --version)"  
+        check_run_docker
     fi
 elif [ "$ID" = "debian"]; then
     if ! command -v docker &> /dev/null;then
-    echo 
-    sudo apt-get update
-    sudo apt-get install ca-certificates curl
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
-    sudo apt-get update -y
-    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-    docker --version
-    check_run_docker
-    
+        echo "Docker 未安装，正在进行安装..."
+        sudo apt-get update
+        sudo apt-get install ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update -y
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        docker --version
+        check_run_docker
+      else
+        echo "Docker 已经安装"
+        echo "Docker版本为： $(docker --version)"  
+        check_run_docker
+    fi
 else
     echo "不支持的操作系统."
     exit 1
