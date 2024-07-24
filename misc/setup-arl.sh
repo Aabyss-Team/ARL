@@ -19,6 +19,29 @@ if sestatus | grep "SELinux status" | grep -q "enabled"; then
 fi
 }
 
+fixed_check_osver() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+  else
+    echo "无法确定发行版"
+    exit 1
+  fi
+
+  case "$NAME $VERSION_ID" in
+    "CentOS Linux 7")
+      os_ver="CentOS Linux 7"
+      ;;
+    "Ubuntu 20.04")
+      os_ver="Ubuntu 20.04"
+      ;;
+    *)
+      echo "此脚本目前不支持您的系统: $NAME $VERSION"
+      exit 1
+      ;;
+  esac
+}
+
+
 check_and_install_pyyaml() {
   required_version="5.4.1"
   installed_version=$(pip3.6 show PyYAML | grep Version | cut -d ' ' -f 2)
@@ -51,6 +74,98 @@ fi
 
 }
 
+check_install_docker(){
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+else
+    echo "无法确定发行版"
+    exit 1
+fi
+if [ "$ID" = "centos" ] ; then
+    if ! command -v docker &> /dev/null;then
+        echo "Docker 未安装，正在进行安装..."
+        sudo yum install -y yum-utils
+        sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        docker --version
+        check_run_docker
+      else
+        echo "Docker 已经安装"
+        echo "Docker版本为： $(docker --version)"  
+        check_run_docker
+    fi
+elif [ "$ID" == "ubuntu" ]; then
+    if ! command -v docker &> /dev/null;then
+        echo "Docker 未安装，正在进行安装..."
+        sudo apt-get update
+        sudo apt-get install ca-certificates curl -y
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update -y
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        docker --version
+        check_run_docker
+      else
+        echo "Docker 已经安装"
+        echo "Docker版本为： $(docker --version)"  
+        check_run_docker
+    fi
+elif [ "$ID" = "debian"]; then
+    if ! command -v docker &> /dev/null;then
+        echo "Docker 未安装，正在进行安装..."
+        sudo apt-get update
+        sudo apt-get install ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update -y
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        docker --version
+        check_run_docker
+      else
+        echo "Docker 已经安装"
+        echo "Docker版本为： $(docker --version)"  
+        check_run_docker
+    fi
+else
+    echo "不支持的操作系统."
+    exit 1
+fi
+}
+
+check_run_docker() {
+status=$(systemctl is-active docker)
+if [ "$status" = "active" ] ; then
+      echo "Docker运行正常"   
+elif [ "$status" = "inactive" ] || [ "$status" = "unknown" ] ; then
+    echo "Docker 服务未运行，正在尝试启动"
+    run=$(systemctl start docker)
+  if [ "$?" = "0" ] ; then
+        echo "Docker 启动成功"
+    else
+        echo "Docker 启动失败"
+        exit 1
+fi
+else
+    echo "无法确定Docker状态"
+    exit 1
+fi
+}
+
+uninstall_docker(){
+
+# 检查容器是否在运行中，如果是，强制停止容器
+if [ "$(docker ps -aq -f name=arl)" ]; then
+    docker stop arl
+    docker rm -f arl
+    echo "容器 arl 停止"
+fi
+docker rmi moshangms/arl-test:latest
+}
+
 install_for_ubuntu() {
 set -e
 
@@ -59,7 +174,7 @@ echo "cd /opt/"
 mkdir -p /opt/
 cd /opt/
 
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/4.4 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-4.4.gpg ] https://repo.mongodb.org/apt/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME")/mongodb-org/4.4 multiverse" |  tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
   if ! command -v curl &> /dev/null; then
     echo "install curl ..."
@@ -477,26 +592,102 @@ echo "install done"
 
 }
 
-if [ -f /etc/centos-release ]; then
-  if grep  -qi 'centos:7' /etc/os-release; then
-    OS="centos7"
-    echo "$OS"
-    check_selinux
-    install_for_centos
-  else
-    echo "Unsupported CentOS version. Only CentOS 7 is supported."
-    exit 1
-  fi
-elif [ -f /etc/lsb-release ] && grep -qi 'ubuntu' /etc/lsb-release; then
-  if grep -qi '20.04' /etc/lsb-release; then
-    OS="ubuntu 20.04"
-    echo "$OS"
-    install_for_ubuntu
-  else
-    echo "Unsupported Ubuntu version. Only Ubuntu 20.04 is supported."
-    exit 1
-  fi
-else
-  echo "Unsupported operating system."
-  exit 1
-fi
+code_install(){
+fixed_check_osver
+case "$os_ver" in
+    "CentOS Linux 7")
+        if [ "$VERSION_ID" == "7" ]; then
+            echo "$os_ver"
+            check_selinux
+            install_for_centos
+        else
+            echo "暂时仅支持CentOS 7"
+            exit 1
+        fi
+        ;;
+    "Ubuntu 20.04")
+        if [ "$VERSION_ID" == "20.04" ]; then
+            echo ""$os_ver""
+            install_for_ubuntu
+        else
+            echo "暂时仅支持Ubuntu 20.04"
+            exit 1
+        fi
+        ;;
+    *)
+        echo "不支持的操作系统"
+        exit 1
+        ;;
+esac
+}
+
+docker_install_menu(){
+echo "请选择要安装的版本："
+echo "1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹"
+echo "2) arl-docker-initial：ARL初始版本，仅去除域名限制。"
+echo "3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。"
+read -p "请输入选项（1-2）：" version_choice
+case $version_choice in
+    1)
+        echo "正在拉取 Docker 镜像：arl-docker-initial..."
+        docker pull moshangms/arl-test:latest
+        echo "正在运行 Docker 容器..."
+        docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
+        docker exec -it arl /bin/bash -c "
+        rabbitmqctl add_user arl arlpassword
+        rabbitmqctl set_user_tags arl administrator
+        rabbitmqctl add_vhost arlv2host
+        rabbitmqctl set_permissions -p arlv2host arl '.*' '.*' '.*'
+        "
+        ;;
+    2)
+        echo "正在拉取 Docker 镜像：arl-docker-initial..."
+        docker pull honmashironeko/arl-docker-initial
+        echo "正在运行 Docker 容器..."
+        docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-initial /usr/sbin/init
+        ;;
+    3)
+        echo "正在拉取 Docker 镜像：arl-docker-all..."
+        docker pull honmashironeko/arl-docker-all
+        echo "正在运行 Docker 容器..."
+        docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-all /usr/sbin/init
+        ;;
+    *)
+        echo "无效的输入，脚本将退出。"
+        exit 1
+        ;;
+esac
+}
+
+
+main_menu(){
+echo -e "1) 源码安装，检测系统版本中...(暂时只支持centos7 and Ubuntu20.04)"
+echo -e "2) docker安装"
+echo -e "3) 卸载Docker镜像"
+echo -e "4) 退出脚本"
+echo "---------------------------------------------------------------"
+read -e -p "输入对应数字:" code_id
+
+case $code_id in
+    1)
+        code_install
+        ;;
+    2)
+        check_install_docker
+        docker_install_menu
+        ;;
+    3)
+        echo "暂时未完成"
+        uninstall_docker
+        ;;
+    4)
+        exit 1
+        ;;
+    *)
+        echo "输入了无效的选择。请重新选择1-4的选项."
+        sleep 2; main_menu
+        ;;
+esac
+}
+
+main_menu

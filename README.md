@@ -10,8 +10,15 @@
 - **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
 - **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
-- **推荐使用Docker安装，请看 [5# Docker启动](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#5-docker-%E5%90%AF%E5%8A%A8) 板块**
-- **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装源码，请看 [10# 源码安装](https://github.com/Aabyss-Team/ARL?tab=readme-ov-file#10-%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85) 板块**
+- **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手，docker安装我自己的docker镜像在shell脚本内修复了需要进入docker输入 `rabbitmqctl` 的bug，集成了[@本间白猫](https://github.com/honmashironeko) 师傅的docker镜像**
+- **这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)**
+
+安装教程
+```
+wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
+chmod +x setup-arl.sh
+./setup-arl.sh
+```
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
 
@@ -48,59 +55,8 @@
 目前暂不支持Windows，初次体验可采用Docker方式运行，长期使用建议采用源码安装方式运行。系统配置建议：CPU:4线程 内存:8G 带宽:10M。  
 由于自动资产发现过程中会有大量的的发包，建议采用云服务器可以带来更好的体验。
 
-## 5# Docker 启动
 
-这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)
-
-```C
-//下载部署脚本项目
-git clone https://github.com/honmashironeko/ARL-docker.git
-
-//进入项目文件夹
-cd ARL-docker/
-
-//添加运行权限
-chmod +x setup_docker.sh
-
-//执行部署脚本
-bash setup_docker.sh
-```
-
-Centos以外的版本请注意，脚本采用的是yum安装工具，如果是apt的话请运行：`apt install docker.io -y`
-
-![Clip_2024-05-29_15-38-52](https://github.com/honmashironeko/ARL-docker/assets/139044047/ad96b024-194c-4711-8d4c-0079e535341a)
-
-输入数字确认安装版本：1 or 2
-
-```C
-//安装完成之后进入容器
-docker exec -it arl /bin/bash
-
-//开始完成ARL部署
-bash /root/arl/set.sh
-```
-
-- 前往ARL-Web页面：`https://IP:5003/`
-- 账号：`admin`，密码：`honmashironeko`
-
-#### Docker安装问题-1：ACCESS_REFUSED
-
-具体为通过Docker方式部署后，添加任务报如下错误 `ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN.`，解决方法如下：
-
-先进入容器：`docker exec -it arl /bin/bash`
-
-执行以下命令：
-
-```
-rabbitmqctl add_user arl arlpassword
-rabbitmqctl set_user_tags arl administrator
-rabbitmqctl add_vhost arlv2host
-rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
-```
-
-经过测试，docker在PUSH上传后，其他地方PULL下载的时候会出现错误，因此需要这步操作。
-
-## 6# 截图
+## 5# 截图
 
 一、登录页面
 
@@ -142,7 +98,7 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 
 ![GitHub 监控任务](./image/github_monitor.png)
 
-## 7# 任务选项说明
+## 6# 任务选项说明
 
 | 编号 |      选项      |                                       说明                                        |
 | --- | -------------- | -------------------------------------------------------------------------------- |
@@ -169,7 +125,7 @@ rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
 | 21   | WIH 调用      | 调用 WebInfoHunter 工具在JS中收集域名,AK/SK等信息                     |
 | 22   | WIH 监控任务   | 对资产分组中的站点周期性 调用 WebInfoHunter 工具在JS中域名等信息进行监控  |
 
-## 8# 配置参数说明
+## 7# 配置参数说明
 
 Docker环境配置文件路径 `docker/config-docker.yaml`
 
@@ -196,7 +152,7 @@ Docker环境配置文件路径 `docker/config-docker.yaml`
 | WXWORK | 企业微信消息推送 |
 
 
-## 9# 忘记密码重置
+## 8# 忘记密码重置
 
 当忘记了登录密码，可以执行下面的命令，然后使用 `admin/admin123` 就可以登录了。
 ```
@@ -206,26 +162,7 @@ db.user.drop()
 db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') })
 ```
 
-
-## 10# 源码安装
-
-适配了 `centos 7` 和 `Ubuntu20.04` ，且灯塔安装目录为/opt/ARL
-如果在其他目录可以创建软连接，且安装了四个服务分别为`arl-web`, `arl-worker`, `arl-worker-github`, `arl-scheduler`
-
-```
-wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
-chmod +x setup-arl.sh
-./setup-arl.sh
-```
-
-**在 `CentOS7`  和 `Ubuntu20.04` 系统上，直接运行本项目内的 `misc/setup-arl.sh` 即可运行源码安装**
-新增了指纹添加，添加代码项目来自https://github.com/loecho-sec/ARL-Finger-ADD
-
-> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
-
-
-
-## 11# FAQ
+## 9# FAQ
 
 请访问如下链接[FAQ](https://tophanttechnology.github.io/ARL-doc/faq/)
 
