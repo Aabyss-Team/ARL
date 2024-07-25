@@ -402,6 +402,8 @@ EOF
 
 echo "install dependencies ..."
 yum install epel-release -y
+yum clean all
+yum makecache
 yum install python36 mongodb-org-server mongodb-org-shell rabbitmq-server python36-devel gcc-c++ git \
  nginx  fontconfig wqy-microhei-fonts unzip wget -y
 
