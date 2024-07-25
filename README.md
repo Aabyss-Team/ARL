@@ -13,7 +13,8 @@
 - **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手，docker安装我自己的docker镜像在shell脚本内修复了需要进入docker输入 `rabbitmqctl` 的bug，集成了[@本间白猫](https://github.com/honmashironeko) 师傅的docker镜像**
 - **这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)**
 
-安装教程
+**ARL安装命令如下（源码安装和Docker安装合一）**
+
 ```
 wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
 chmod +x setup-arl.sh
@@ -21,6 +22,15 @@ chmod +x setup-arl.sh
 ```
 
 > 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+
+近期发现本项目的Issues和Bug比较多，有问题欢迎进群咨询：
+
+<table>
+  <tr>
+    <td><img src="Team.jpg" alt="" /></td>
+    <td><img src="leader.jpg" alt="" /></td>
+  </tr>
+</table>
 
 ### 万分感谢各位师傅的Star
 
