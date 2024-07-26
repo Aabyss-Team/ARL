@@ -12,6 +12,8 @@
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
 - **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手，docker安装我自己的docker镜像在shell脚本内修复了需要进入docker输入 `rabbitmqctl` 的bug，集成了[@本间白猫](https://github.com/honmashironeko) 师傅的docker镜像**
 - **这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)**
+- **脚本现以支持国内服务器安装建议用源码安装，Docker安装采用Docker镜像加速的方式可能会不稳定抽风现象建议源码安装**
+- **安装完成便自带7000+指纹**
 
 **ARL安装命令如下（源码安装和Docker安装合一）**
 
