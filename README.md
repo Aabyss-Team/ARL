@@ -41,7 +41,16 @@ systemctl status nginx
 
 源码安装后，请前往ARL-Web页面：`https://IP:5003/`：账号：`admin`，密码：`arlpass`
 
-如果选择的是Docker安装，拉取完镜像开始跑容器后，要进入容器执行脚本：
+Docker安装总共有三个版本进行选择，如下：
+
+```
+1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹
+2) arl-docker-initial：ARL初始版本，仅去除域名限制。
+3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。
+```
+
+- 如果选择1进行Docker安装，直接拉取镜像运行容器即可，不需要额外操作，请前往`https://IP:5003/`：账号：`admin`，密码：`arlpass`
+- 如果选择2和3进行Docker安装，拉取完镜像开始运行容器后，需要进入容器执行脚本：
 
 ```
 //在安装完成之后进入容器
@@ -51,7 +60,7 @@ docker exec -it arl /bin/bash
 bash /root/arl/set.sh
 ```
 
-Docker安装后，请前往ARL-Web页面：`https://IP:5003/`：账号：`admin`，密码：`honmashironeko`
+执行完脚本确认没报错后，请前往ARL-Web页面：`https://IP:5003/`：账号：`admin`，密码：`honmashironeko`
 
 > ~~本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`~~
 
