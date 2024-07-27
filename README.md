@@ -23,7 +23,21 @@ chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
 
-> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+如果选择的是Docker安装，接下来要进入容器执行脚本：
+
+```
+//在安装完成之后进入容器
+docker exec -it arl /bin/bash
+
+//开始完成ARL部署
+bash /root/arl/set.sh
+```
+
+前往ARL-Web页面：`https://IP:5003/`
+
+账号：`admin`，密码：`honmashironeko`
+
+> ~~本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`~~
 
 近期发现本项目的Issues和Bug比较多，有问题欢迎进群咨询：
 
