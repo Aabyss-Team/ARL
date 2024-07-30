@@ -544,7 +544,7 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
 
   if [ ! -f /usr/local/bin/pip3.6 ]; then
     echo "install pip3.6"
-    curl https://bootstrap.pypa.io/pip/3.6/get-pip.py -o get-pip.py
+    curl https://raw.gitcode.com/msmoshang/arl_files/blobs/fd48c7fdef802d8bb86ace74134c553f0317258c/get-pip.py -o get-pip.py
     #国内下载失败可以打开
     python3.6 get-pip.py -i https://pypi.tuna.tsinghua.edu.cn/simple
     pip3.6 --version
