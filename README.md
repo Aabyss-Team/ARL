@@ -73,7 +73,7 @@ bash /root/arl/set.sh
 <table>
   <tr>
     <td><img src="Team.jpg" alt="" /></td>
-    <td><img src="leader.jpg" alt="" /></td>
+    <td><img src="Aabyss-Bot.jpg" alt="" /></td>
   </tr>
 </table>
 
