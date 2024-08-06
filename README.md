@@ -10,10 +10,11 @@
 - **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
 - **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
-- **在 `CentOS7` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手，docker安装我自己的docker镜像在shell脚本内修复了需要进入docker输入 `rabbitmqctl` 的bug，集成了[@本间白猫](https://github.com/honmashironeko) 师傅的docker镜像**
+- **在 `CentOS7 and 8` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手**
+- **Docker安装暂时只支持[@本间白猫](https://github.com/honmashironeko) 师傅的Docker镜像，后续会进行添加**
 - **这里感谢 [@本间白猫](https://github.com/honmashironeko) 师傅，一起研究源码并[解决了相关问题](https://github.com/honmashironeko/ARL-docker)**
 - **脚本现以支持国内服务器安装建议用源码安装，Docker安装采用Docker镜像加速的方式可能会不稳定抽风现象建议源码安装**
-- **安装完成便自带7000+指纹**
+- **去除自带指纹，转为自选添加提高脚本运行容错**
 
 ---
 
