@@ -16,16 +16,69 @@
 - **脚本现以支持国内服务器安装建议用源码安装，Docker安装采用Docker镜像加速的方式可能会不稳定抽风现象建议源码安装**
 - **去除自带指纹，转为自选添加提高脚本运行容错**
 
-安装教程
+---
+
+### 1.1 如何安装ARL
+
+**ARL安装命令如下（源码安装和Docker安装合一）**
+
 ```
 wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
 chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
 
-> 本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`
+如果选择的是源码安装，可以通过以下命令确认服务状态（如果全部运行正常那就没问题）：
 
-### 万分感谢各位师傅的Star
+```
+systemctl status mongod
+systemctl status rabbitmq-server
+systemctl status arl-web
+systemctl status arl-worker
+systemctl status arl-worker-github
+systemctl status arl-scheduler
+systemctl status nginx
+```
+
+源码安装后，请前往ARL-Web页面：`https://IP:5003/`：账号：`admin`，密码：`arlpass`
+
+Docker安装总共有三个版本进行选择，如下：
+
+```
+1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹
+2) arl-docker-initial：ARL初始版本，仅去除域名限制。
+3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。
+```
+
+- 如果选择1进行Docker安装，直接拉取镜像运行容器即可，不需要额外操作，请前往`https://IP:5003/`：账号：`admin`，密码：`arlpass`
+- 如果选择2和3进行Docker安装，拉取完镜像开始运行容器后，需要进入容器执行脚本：
+
+```
+//在安装完成之后进入容器
+docker exec -it arl /bin/bash
+
+//开始完成ARL部署
+bash /root/arl/set.sh
+```
+
+执行完脚本确认没报错后，请前往ARL-Web页面：`https://IP:5003/`：账号：`admin`，密码：`honmashironeko`
+
+> ~~本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`~~
+
+---
+
+### 1.2 问题反馈
+
+近期发现本项目的Issues和Bug比较多，有问题欢迎进群咨询：
+
+<table>
+  <tr>
+    <td><img src="Team.jpg" alt="" /></td>
+    <td><img src="Aabyss-Bot.jpg" alt="" /></td>
+  </tr>
+</table>
+
+### 1.3 万分感谢各位师傅的Star
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Aabyss-Team/ARL&type=Date)](https://star-history.com/#Aabyss-Team/ARL&Date)
 
