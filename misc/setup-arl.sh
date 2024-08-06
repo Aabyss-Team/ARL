@@ -1,16 +1,43 @@
 #!/bin/bash
 #set -e
+add_finger(){
+  cd /opt/ARL/misc
+
+  # 提示用户输入 admin 和 arlpass，并提供默认值
+  read -p "请输入管理员用户名 (默认: admin): " admin_user
+  read -p "请输入管理员密码 (默认: arlpass): " admin_pass
+
+  # 如果用户没有输入，则使用默认值
+  admin_user=${admin_user:-admin}
+  admin_pass=${admin_pass:-arlpass}
+
+  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+    echo "添加指纹"
+    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass"
+  else
+    echo "错误: ARL-Finger-ADD.py 或 finger.json 文件不存在或为空。"
+  fi
+}
 sources_shell(){
-echo "换源"
-echo "该脚本来自 （https://github.com/SuperManito/LinuxMirrors）"
-cd /opt
-if [ ! -f /opt/ChangeMirrors.sh ]; then
-    echo "download ChangeMirrors.sh ..."
-    wget https://raw.gitcode.com/msmoshang/arl_files/blobs/2e431d9617f7b752747969887207a370492dc1f8/ChangeMirrors.sh -O /opt/ChangeMirrors.sh
-fi
+    echo "换源"
+    echo "该脚本来自 （https://github.com/SuperManito/LinuxMirrors）"
+    cd /opt
+    
+    if [ ! -f /opt/ChangeMirrors.sh ]; then
+        echo "下载 ChangeMirrors.sh ..."
+        
+        # 判断 curl 和 wget 是否存在
+        if command -v curl >/dev/null 2>&1; then
+            curl -o /opt/ChangeMirrors.sh https://raw.gitcode.com/msmoshang/arl_files/blobs/2e431d9617f7b752747969887207a370492dc1f8/ChangeMirrors.sh
+        elif command -v wget >/dev/null 2>&1; then
+            wget https://raw.gitcode.com/msmoshang/arl_files/blobs/2e431d9617f7b752747969887207a370492dc1f8/ChangeMirrors.sh -O /opt/ChangeMirrors.sh
+        else
+            echo "错误: curl 和 wget 都不存在，请安装其中一个再运行此脚本。"
+            return 1
+        fi
+    fi
 
- bash ChangeMirrors.sh
-
+    bash /opt/ChangeMirrors.sh
 }
 check_selinux(){
 systemctl stop firewalld &> /dev/null
@@ -509,12 +536,12 @@ systemctl enable nginx
 systemctl start nginx
 
 
-    # Add fingerprint
-  cd /opt/ARL/misc
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "ADD finger"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
-  fi
+  #   # Add fingerprint
+  # cd /opt/ARL/misc
+  # if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+  #   echo "ADD finger"
+  #   python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
+  # fi
 
 #重新启动特定服务防止添加指纹断开连接造成启动失败
 echo "restart services"
@@ -773,12 +800,12 @@ systemctl enable nginx
 systemctl start nginx
 
 
-    # Add fingerprint
-  cd /opt/ARL/misc
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "ADD finger"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
-  fi
+  #   # Add fingerprint
+  # cd /opt/ARL/misc
+  # if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+  #   echo "ADD finger"
+  #   python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
+  # fi
 
 #重新启动特定服务防止添加指纹断开连接造成启动失败
 echo "restart services"
@@ -1000,12 +1027,12 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
   systemctl enable nginx
   systemctl start nginx
 
-    # Add fingerprint
-  cd /opt/ARL/misc
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "ADD finger"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
-  fi
+  #   # Add fingerprint
+  # cd /opt/ARL/misc
+  # if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+  #   echo "ADD finger"
+  #   python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
+  # fi
 
 
 #重新启动特定服务防止添加指纹断开连接造成启动失败
@@ -1229,12 +1256,12 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
   systemctl enable nginx
   systemctl start nginx
 
-    # Add fingerprint
-  cd /opt/ARL/misc
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "ADD finger"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
-  fi
+  #   # Add fingerprint
+  # cd /opt/ARL/misc
+  # if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+  #   echo "ADD finger"
+  #   python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
+  # fi
 
 
 #重新启动特定服务防止添加指纹断开连接造成启动失败
@@ -1456,12 +1483,12 @@ systemctl enable nginx
 systemctl start nginx
 
 
-    # Add fingerprint
-  cd /opt/ARL/misc
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "ADD finger"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
-  fi
+  #   # Add fingerprint
+  # cd /opt/ARL/misc
+  # if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+  #   echo "ADD finger"
+  #   python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
+  # fi
 
 #重新启动特定服务防止添加指纹断开连接造成启动失败
 echo "restart services"
@@ -1729,12 +1756,12 @@ systemctl enable nginx
 systemctl start nginx
 
 
-    # Add fingerprint
-  cd /opt/ARL/misc
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "ADD finger"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
-  fi
+  #   # Add fingerprint
+  # cd /opt/ARL/misc
+  # if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
+  #   echo "ADD finger"
+  #   python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arlpass
+  # fi
 
 #重新启动特定服务防止添加指纹断开连接造成启动失败
 echo "restart services"
@@ -1835,35 +1862,32 @@ check_run_docker
 
 docker_install_menu(){
 echo "请选择要安装的版本："
-echo "1) arl-docker/moshangms：ARL初始版本，仅去除域名限制,5000+指纹"
-echo "2) arl-docker-initial：ARL初始版本，仅去除域名限制。"
-echo "3) arl-docker-all：ARL完全指纹版本，去除域名限制，全量 7165 条指纹。"
-read -p "请输入选项（1-2）：" version_choice
+echo "1) arl-docker-all：honmashironeko docker(暂时支持国外安装)"
+read -p "请输入选项（1）：" version_choice
 case $version_choice in
     1)
-        echo "正在拉取 Docker 镜像：arl-docker-initial..."
-        docker pull moshangms/arl-test:latest
-        echo "正在运行 Docker 容器..."
-        docker run -d -p 5003:5003 --name arl --privileged=true moshangms/arl-test  /usr/sbin/init
-        docker exec -it arl /bin/bash -c "
-        rabbitmqctl add_user arl arlpassword
-        rabbitmqctl set_user_tags arl administrator
-        rabbitmqctl add_vhost arlv2host
-        rabbitmqctl set_permissions -p arlv2host arl '.*' '.*' '.*'
-        "
+        echo "正在 Git ARL-docker"
+        cd /opt/
+        if [ ! -d ARL-docker ]; then
+        echo "git clone ARL proj"
+        git clone https://github.com/honmashironeko/ARL-docker
+        fi
+        cd /opt/ARL-docker
+        chmod +x setup_docker.sh
+        bash setup_docker.sh
         ;;
-    2)
-        echo "正在拉取 Docker 镜像：arl-docker-initial..."
-        docker pull honmashironeko/arl-docker-initial
-        echo "正在运行 Docker 容器..."
-        docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-initial /usr/sbin/init
-        ;;
-    3)
-        echo "正在拉取 Docker 镜像：arl-docker-all..."
-        docker pull honmashironeko/arl-docker-all
-        echo "正在运行 Docker 容器..."
-        docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-all /usr/sbin/init
-        ;;
+    # 2)
+    #     echo "正在拉取 Docker 镜像：arl-docker-initial..."
+    #     docker pull honmashironeko/arl-docker-initial
+    #     echo "正在运行 Docker 容器..."
+    #     docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-initial /usr/sbin/init
+    #     ;;
+    # 3)
+    #     echo "正在拉取 Docker 镜像：arl-docker-all..."
+    #     docker pull honmashironeko/arl-docker-all
+    #     echo "正在运行 Docker 容器..."
+    #     docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-all /usr/sbin/init
+    #     ;;
     *)
         echo "无效的输入，脚本将退出。"
         exit 1
@@ -1874,16 +1898,17 @@ esac
 
 main_menu(){
 echo -e "第一次安装建议进行换源参数在继续安装"  
-echo -e "0) 换源 (脚本来自于 https://github.com/SuperManito/LinuxMirrors)"  
-echo -e "1) 源码安装(暂时只支持centos 7 8 and Ubuntu20.04 支持国内外安装)"
-echo -e "2) docker安装 （支持国内外安装，但可能存在抽风问题）"
-echo -e "3) 卸载Docker镜像"
-echo -e "4) 退出脚本"
+echo -e "1) 换源 (脚本来自于 https://github.com/SuperManito/LinuxMirrors)"  
+echo -e "2) 源码安装(暂时只支持centos 7 8 and Ubuntu20.04 支持国内外安装)"
+echo -e "3) docker安装 （支持国内外安装，但可能存在抽风问题）"
+echo -e "4) 卸载Docker镜像"
+echo -e "5) 添加指纹（默认为7k+）只限于源码安装添加指纹"
+echo -e "6) 退出脚本"
 echo "---------------------------------------------------------------"
 read -e -p "输入对应数字:" code_id
 
 case $code_id in
-    0)
+    1)
       while true; do
           echo "换源"
           read -e -p "$(echo "换源选择1 不换源选择2 > ")" code_deploy
@@ -1900,7 +1925,7 @@ case $code_id in
       done
       main_menu
       ;;
-    1)
+    2)
       while true; do
           echo "源码安装"
           read -e -p "$(echo "安装环境确认 [国外环境输1  国内环境输2] > ")" code_deploy
@@ -1916,7 +1941,7 @@ case $code_id in
           esac
       done
       ;;
-    2)
+    3)
       while true; do
           echo "Docker安装"
           read -e -p "$(echo "安装环境确认 [国外环境输1  国内环境输2] > ")" code_deploy
@@ -1936,11 +1961,14 @@ case $code_id in
           esac
       done
       ;;      
-    3)
+    4)
         echo "暂时未完成"
         uninstall_docker
         ;;
-    4)
+    5)
+        add_finger
+        ;;
+    6)
         exit 1
         ;;
     *)
