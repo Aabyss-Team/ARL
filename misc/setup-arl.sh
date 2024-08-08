@@ -666,6 +666,12 @@ if [ ! -f /usr/local/bin/pip3.6 ]; then
   pip3.6 --version
 fi
 
+if ! command -v nmap &> /dev/null
+then
+    echo "install nmap-7.93-1 ..."
+    yum install nmap -y
+fi
+
 if ! command -v nuclei &> /dev/null
 then
   echo "install nuclei_3.3.0 ..."
@@ -1618,7 +1624,7 @@ fi
 if ! command -v nmap &> /dev/null
 then
     echo "install nmap-7.93-1 ..."
-    rpm -vhU https://nmap.org/dist/nmap-7.93-1.x86_64.rpm
+    yum install nmap -y
 fi
 
 if ! command -v nuclei &> /dev/null
