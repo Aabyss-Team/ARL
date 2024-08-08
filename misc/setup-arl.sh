@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -e
-add_finger(){
+add_finger() {
   cd /opt/ARL/misc
 
   # 提示用户输入 admin 和 arlpass，并提供默认值
@@ -11,13 +11,30 @@ add_finger(){
   admin_user=${admin_user:-admin}
   admin_pass=${admin_pass:-arlpass}
 
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "添加指纹"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass"
+  # 提示用户输入文件路径，提供默认值，并让用户可以不输入路径
+  read -p "请输入指纹文件路径例：/opt/ARL/misc/finger.json（可以留空以使用默认的 finger.json）: " finger_file
+
+  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ]; then
+    if [ -z "$finger_file" ]; then
+      if [ -s /opt/ARL/misc/finger.json ]; then
+        echo "添加指纹（使用默认的 finger.json）"
+        python3.6 ADD-ARL-Finger.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass"
+      else
+        echo "错误: 默认的 finger.json 文件不存在或为空。"
+      fi
+    else
+      if [ -s "$finger_file" ]; then
+        echo "添加指纹（使用指定的文件路径）"
+        python3.6 ADD-ARL-Finger.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass" "$finger_file"
+      else
+        echo "错误: 指定的指纹文件不存在或为空。"
+      fi
+    fi
   else
-    echo "错误: ARL-Finger-ADD.py 或 finger.json 文件不存在或为空。"
+    echo "错误: ARL-Finger-ADD.py 文件不存在或为空。"
   fi
 }
+
 sources_shell(){
     echo "换源"
     echo "该脚本来自 （https://github.com/SuperManito/LinuxMirrors）"
@@ -39,6 +56,62 @@ sources_shell(){
 
     bash /opt/ChangeMirrors.sh
 }
+
+# 检查并安装 git 的函数
+check_and_install_git() {
+    echo "正在检测 git 是否安装..."
+
+    if ! command -v git &> /dev/null; then
+        echo "git 未安装，正在安装 git..."
+        if [[ -f /etc/debian_version ]]; then
+            # Debian/Ubuntu 系
+            sudo apt-get update
+            sudo apt-get install -y git
+        elif [[ -f /etc/redhat-release ]]; then
+            # CentOS/RHEL 系
+            sudo yum install -y git
+        elif [[ -f /etc/fedora-release ]]; then
+            # Fedora 系
+            sudo dnf install -y git
+        elif [[ -f /etc/arch-release ]]; then
+            # Arch Linux 系
+            sudo pacman -S --noconfirm git
+        else
+            echo "不支持的 Linux 发行版，请手动安装 git。"
+            exit 1
+        fi
+    else
+        echo "git 已安装。"
+    fi
+}
+
+#国内安装时检测一些必要命令
+check_and_install_docker_tools() {
+    tools=("wget" "tar")
+
+    for tool in "${tools[@]}"; do
+        if ! command -v $tool &> /dev/null; then
+            echo "$tool 未安装，正在安装 $tool..."
+            if [[ -f /etc/debian_version ]]; then
+                sudo apt-get update
+                sudo apt-get install -y $tool
+            elif [[ -f /etc/redhat-release ]]; then
+                sudo yum install -y $tool
+            elif [[ -f /etc/fedora-release ]]; then
+                sudo dnf install -y $tool
+            elif [[ -f /etc/arch-release ]]; then
+                sudo pacman -S --noconfirm $tool
+            else
+                echo "不支持的 Linux 发行版，请手动安装 $tool。"
+                exit 1
+            fi
+        else
+            echo "$tool 已安装。"
+        fi
+    done
+}
+
+#检测selinux并关闭
 check_selinux(){
 systemctl stop firewalld &> /dev/null
 systemctl disable firewalld &> /dev/null
@@ -137,6 +210,7 @@ case $cpu_arch in
     ;;
 esac
 
+check_and_install_docker_tools
 
 if ! command -v docker &> /dev/null; then
   while [ $attempt -lt $MAX_ATTEMPTS ]; do
@@ -246,6 +320,50 @@ if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)
 else
     chmod +x $save_path/docker-compose
     echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
+fi
+}
+
+check_install_docker-compose() {
+echo "安装docker compose"
+
+TAG=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+url="https://github.com/docker/compose/releases/download/$TAG/docker-compose-$(uname -s)-$(uname -m)"
+MAX_ATTEMPTS=3
+attempt=0
+success=false
+save_path="/usr/local/bin"
+
+chmod +x $save_path/docker-compose &>/dev/null
+if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)" ]; then
+    echo "Docker Compose 未安装或安装不完整，正在进行安装..."    
+    while [ $attempt -lt $MAX_ATTEMPTS ]; do
+        attempt=$((attempt + 1))
+        wget --continue -q $url -O $save_path/docker-compose
+        if [ $? -eq 0 ]; then
+            chmod +x $save_path/docker-compose
+            version_check=$(docker-compose --version)
+            if [ -n "$version_check" ]; then
+                success=true
+                chmod +x $save_path/docker-compose
+                break
+            else
+                echo "Docker Compose 下载的文件不完整，正在尝试重新下载 (尝试次数: $attempt)"
+                rm -f $save_path/docker-compose
+            fi
+        fi
+
+        echo "Docker Compose 下载失败，正在尝试重新下载 (尝试次数: $attempt)"
+    done
+
+    if $success; then
+        echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
+    else
+        echo "Docker Compose 下载失败，请尝试手动安装docker-compose"
+        exit 1
+    fi
+else
+    chmod +x $save_path/docker-compose
+    echo "Docker Compose 已经安装，版本为：$(docker-compose --version)"
 fi
 }
 
@@ -647,6 +765,12 @@ if [ ! -f /usr/local/bin/pip3.6 ]; then
   python3.6 -m pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple
   pip3.6 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
   pip3.6 --version
+fi
+
+if ! command -v nmap &> /dev/null
+then
+    echo "install nmap-7.92-1 ..."
+    yum install nmap -y
 fi
 
 if ! command -v nuclei &> /dev/null
@@ -1600,8 +1724,8 @@ fi
 
 if ! command -v nmap &> /dev/null
 then
-    echo "install nmap-7.93-1 ..."
-    rpm -vhU https://nmap.org/dist/nmap-7.93-1.x86_64.rpm
+    echo "install nmap-7.92-1 ..."
+    yum install nmap -y
 fi
 
 if ! command -v nuclei &> /dev/null
@@ -1866,6 +1990,7 @@ echo "1) arl-docker-all：honmashironeko docker(暂时支持国外安装)"
 read -p "请输入选项（1）：" version_choice
 case $version_choice in
     1)
+        check_and_install_git
         echo "正在 Git ARL-docker"
         cd /opt/
         if [ ! -d ARL-docker ]; then
@@ -1948,6 +2073,7 @@ case $code_id in
           case "$code_deploy" in
               1)
                   check_install_docker
+                  check_install_docker-compose
                   docker_install_menu
                   break;;
               2)
