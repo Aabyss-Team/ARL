@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -e
-add_finger(){
+add_finger() {
   cd /opt/ARL/misc
 
   # 提示用户输入 admin 和 arlpass，并提供默认值
@@ -11,13 +11,30 @@ add_finger(){
   admin_user=${admin_user:-admin}
   admin_pass=${admin_pass:-arlpass}
 
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ] && [ -s /opt/ARL/misc/finger.json ]; then
-    echo "添加指纹"
-    python3.6 ARL-Finger-ADD.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass"
+  # 提示用户输入文件路径，提供默认值，并让用户可以不输入路径
+  read -p "请输入指纹文件路径例：/opt/ARL/misc/finger.json（可以留空以使用默认的 finger.json）: " finger_file
+
+  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ]; then
+    if [ -z "$finger_file" ]; then
+      if [ -s /opt/ARL/misc/finger.json ]; then
+        echo "添加指纹（使用默认的 finger.json）"
+        python3.6 ADD-ARL-Finger.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass"
+      else
+        echo "错误: 默认的 finger.json 文件不存在或为空。"
+      fi
+    else
+      if [ -s "$finger_file" ]; then
+        echo "添加指纹（使用指定的文件路径）"
+        python3.6 ADD-ARL-Finger.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass" "$finger_file"
+      else
+        echo "错误: 指定的指纹文件不存在或为空。"
+      fi
+    fi
   else
-    echo "错误: ARL-Finger-ADD.py 或 finger.json 文件不存在或为空。"
+    echo "错误: ARL-Finger-ADD.py 文件不存在或为空。"
   fi
 }
+
 sources_shell(){
     echo "换源"
     echo "该脚本来自 （https://github.com/SuperManito/LinuxMirrors）"
