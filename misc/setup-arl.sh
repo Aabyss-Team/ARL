@@ -85,6 +85,33 @@ check_and_install_git() {
     fi
 }
 
+#国内安装时检测一些必要命令
+check_and_install_docker_tools() {
+    tools=("wget" "tar")
+
+    for tool in "${tools[@]}"; do
+        if ! command -v $tool &> /dev/null; then
+            echo "$tool 未安装，正在安装 $tool..."
+            if [[ -f /etc/debian_version ]]; then
+                sudo apt-get update
+                sudo apt-get install -y $tool
+            elif [[ -f /etc/redhat-release ]]; then
+                sudo yum install -y $tool
+            elif [[ -f /etc/fedora-release ]]; then
+                sudo dnf install -y $tool
+            elif [[ -f /etc/arch-release ]]; then
+                sudo pacman -S --noconfirm $tool
+            else
+                echo "不支持的 Linux 发行版，请手动安装 $tool。"
+                exit 1
+            fi
+        else
+            echo "$tool 已安装。"
+        fi
+    done
+}
+
+#检测selinux并关闭
 check_selinux(){
 systemctl stop firewalld &> /dev/null
 systemctl disable firewalld &> /dev/null
@@ -183,6 +210,7 @@ case $cpu_arch in
     ;;
 esac
 
+check_and_install_docker_tools
 
 if ! command -v docker &> /dev/null; then
   while [ $attempt -lt $MAX_ATTEMPTS ]; do
