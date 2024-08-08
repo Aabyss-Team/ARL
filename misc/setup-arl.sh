@@ -56,6 +56,35 @@ sources_shell(){
 
     bash /opt/ChangeMirrors.sh
 }
+
+# 检查并安装 git 的函数
+check_and_install_git() {
+    echo "正在检测 git 是否安装..."
+
+    if ! command -v git &> /dev/null; then
+        echo "git 未安装，正在安装 git..."
+        if [[ -f /etc/debian_version ]]; then
+            # Debian/Ubuntu 系
+            sudo apt-get update
+            sudo apt-get install -y git
+        elif [[ -f /etc/redhat-release ]]; then
+            # CentOS/RHEL 系
+            sudo yum install -y git
+        elif [[ -f /etc/fedora-release ]]; then
+            # Fedora 系
+            sudo dnf install -y git
+        elif [[ -f /etc/arch-release ]]; then
+            # Arch Linux 系
+            sudo pacman -S --noconfirm git
+        else
+            echo "不支持的 Linux 发行版，请手动安装 git。"
+            exit 1
+        fi
+    else
+        echo "git 已安装。"
+    fi
+}
+
 check_selinux(){
 systemctl stop firewalld &> /dev/null
 systemctl disable firewalld &> /dev/null
@@ -1889,6 +1918,7 @@ echo "1) arl-docker-all：honmashironeko docker(暂时支持国外安装)"
 read -p "请输入选项（1）：" version_choice
 case $version_choice in
     1)
+        check_and_install_git
         echo "正在 Git ARL-docker"
         cd /opt/
         if [ ! -d ARL-docker ]; then
