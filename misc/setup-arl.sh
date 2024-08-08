@@ -668,7 +668,7 @@ fi
 
 if ! command -v nmap &> /dev/null
 then
-    echo "install nmap-7.93-1 ..."
+    echo "install nmap-7.92-1 ..."
     yum install nmap -y
 fi
 
@@ -1623,7 +1623,7 @@ fi
 
 if ! command -v nmap &> /dev/null
 then
-    echo "install nmap-7.93-1 ..."
+    echo "install nmap-7.92-1 ..."
     yum install nmap -y
 fi
 
