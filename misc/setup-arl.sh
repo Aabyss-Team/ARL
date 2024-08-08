@@ -323,6 +323,50 @@ else
 fi
 }
 
+check_install_docker-compose() {
+echo "安装docker compose"
+
+TAG=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+url="https://github.com/docker/compose/releases/download/$TAG/docker-compose-$(uname -s)-$(uname -m)"
+MAX_ATTEMPTS=3
+attempt=0
+success=false
+save_path="/usr/local/bin"
+
+chmod +x $save_path/docker-compose &>/dev/null
+if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)" ]; then
+    echo "Docker Compose 未安装或安装不完整，正在进行安装..."    
+    while [ $attempt -lt $MAX_ATTEMPTS ]; do
+        attempt=$((attempt + 1))
+        wget --continue -q $url -O $save_path/docker-compose
+        if [ $? -eq 0 ]; then
+            chmod +x $save_path/docker-compose
+            version_check=$(docker-compose --version)
+            if [ -n "$version_check" ]; then
+                success=true
+                chmod +x $save_path/docker-compose
+                break
+            else
+                echo "Docker Compose 下载的文件不完整，正在尝试重新下载 (尝试次数: $attempt)"
+                rm -f $save_path/docker-compose
+            fi
+        fi
+
+        echo "Docker Compose 下载失败，正在尝试重新下载 (尝试次数: $attempt)"
+    done
+
+    if $success; then
+        echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
+    else
+        echo "Docker Compose 下载失败，请尝试手动安装docker-compose"
+        exit 1
+    fi
+else
+    chmod +x $save_path/docker-compose
+    echo "Docker Compose 已经安装，版本为：$(docker-compose --version)"
+fi
+}
+
 
 check_install_docker(){
 if [ -f /etc/os-release ]; then
@@ -2029,6 +2073,7 @@ case $code_id in
           case "$code_deploy" in
               1)
                   check_install_docker
+                  check_install_docker-compose
                   docker_install_menu
                   break;;
               2)
