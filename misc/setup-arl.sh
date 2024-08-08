@@ -205,7 +205,7 @@ case $cpu_arch in
     url="https://raw.gitcode.com/msmoshang/arl_files/blobs/2062dee5a2b85f820fc7e56a8e238525a3b06ea3/$docker_ver"
     ;;
   *)
-    ERROR "不支持的CPU架构: $cpu_arch"
+    echo "不支持的CPU架构: $cpu_arch"
     exit 1
     ;;
 esac
@@ -221,7 +221,7 @@ if ! command -v docker &> /dev/null; then
         success=true
         break
     fi
-    ERROR "Docker 安装失败，正在尝试重新下载 (尝试次数: $attempt)"
+    echo "Docker 安装失败，正在尝试重新下载 (尝试次数: $attempt)"
   done
 
   if $success; then
@@ -257,7 +257,7 @@ EOF
     check_run_docker
     systemctl enable docker
   else
-    ERROR "Docker 安装失败，请尝试手动安装"
+    echo "Docker 安装失败，请尝试手动安装"
     exit 1
   fi
 else 
@@ -283,7 +283,7 @@ case $cpu_arch in
     url="https://raw.gitcode.com/msmoshang/arl_files/blobs/72eb38523db2f2c0b9645b2597d3ed9c9e778c7e/docker-compose-linux-x86_64"
     ;;
   *)
-    ERROR "不支持的CPU架构: $cpu_arch"
+    echo "不支持的CPU架构: $cpu_arch"
     exit 1
     ;;
 esac
@@ -308,13 +308,13 @@ if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)
             fi
         fi
 
-        ERROR "Docker Compose 下载失败，正在尝试重新下载 (尝试次数: $attempt)"
+        echo "Docker Compose 下载失败，正在尝试重新下载 (尝试次数: $attempt)"
     done
 
     if $success; then
         echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
     else
-        ERROR "Docker Compose 下载失败，请尝试手动安装docker-compose"
+        echo "Docker Compose 下载失败，请尝试手动安装docker-compose"
         exit 1
     fi
 else
