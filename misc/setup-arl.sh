@@ -29,8 +29,22 @@ add_finger() {
 
   # 显示新旧添加方式的区别
   echo "请选择添加方式:"
-  echo "1. old - 旧方式：逐条添加指纹。适合使用已有的指纹 JSON 数据，并且需要将每一条指纹逐个添加到系统中。"
-  echo "2. new - 新方式：批量上传指纹文件。适合直接上传包含多个指纹的文件，方便快速导入大批量指纹。"
+  echo "1. old - 旧方式：逐条添加指纹。适合使用已有的指纹 JSON 数据，并且需要将每一条指纹逐个添加到系统中。
+  格式：
+       {
+         "cms": "致远OA",
+         "method": "keyword",
+         "location": "rule: body",
+         "keyword": [
+            "/seeyon/USER-DATA/IMAGES/LOGIN/login.gif"
+          ]
+        }
+  "
+  echo "2. new - 新方式：批量上传指纹文件。适合直接上传包含多个指纹的文件，方便快速导入大批量指纹。
+  格式:
+      - name: 致远OA
+      rule: body="/seeyon/USER-DATA/IMAGES/LOGIN/login.gif"
+  "
 
   # 提示用户选择添加方式
   read -p "请输入选择的添加方式 (new 或 old，默认: old): " method
