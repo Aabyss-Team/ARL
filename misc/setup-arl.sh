@@ -1,7 +1,21 @@
 #!/bin/bash
 #set -e
 add_finger() {
-  cd /opt/ARL/misc
+  check_and_install_docker_tools
+  # 检查 /opt/ARL/misc 目录是否存在
+  if [ -d /opt/ARL/misc ]; then
+    cd /opt/ARL/misc
+    download_dir="/opt/ARL/misc"
+  else
+    echo "/opt/ARL/misc 目录不存在，将文件下载到 /root 目录"
+    download_dir="/root"
+  fi
+
+  # 提示用户输入 URL，并提供默认值
+  read -p "请输入目标 URL (默认: https://127.0.0.1:5003/): " target_url
+
+  # 如果用户没有输入，则使用默认值
+  target_url=${target_url:-https://127.0.0.1:5003/}
 
   # 提示用户输入 admin 和 arlpass，并提供默认值
   read -p "请输入管理员用户名 (默认: admin): " admin_user
@@ -11,29 +25,56 @@ add_finger() {
   admin_user=${admin_user:-admin}
   admin_pass=${admin_pass:-arlpass}
 
-  # 提示用户输入文件路径，提供默认值，并让用户可以不输入路径
-  read -p "请输入指纹文件路径例：/opt/ARL/misc/finger.json（可以留空以使用默认的 finger.json）: " finger_file
+  # 显示新旧添加方式的区别
+  echo "请选择添加方式:"
+  echo "1. old - 旧方式：逐条添加指纹。适合使用已有的指纹 JSON 数据，并且需要将每一条指纹逐个添加到系统中。"
+  echo "2. new - 新方式：批量上传指纹文件。适合直接上传包含多个指纹的文件，方便快速导入大批量指纹。"
 
-  if [ -s /opt/ARL/misc/ARL-Finger-ADD.py ]; then
-    if [ -z "$finger_file" ]; then
-      if [ -s /opt/ARL/misc/finger.json ]; then
-        echo "添加指纹（使用默认的 finger.json）"
-        python3.6 ADD-ARL-Finger.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass"
-      else
-        echo "错误: 默认的 finger.json 文件不存在或为空。"
-      fi
-    else
-      if [ -s "$finger_file" ]; then
-        echo "添加指纹（使用指定的文件路径）"
-        python3.6 ADD-ARL-Finger.py https://127.0.0.1:5003/ "$admin_user" "$admin_pass" "$finger_file"
-      else
-        echo "错误: 指定的指纹文件不存在或为空。"
-      fi
+  # 提示用户选择添加方式
+  read -p "请输入选择的添加方式 (new 或 old，默认: old): " method
+
+  # 如果用户没有输入，则使用默认方式 old
+  method=${method:-old}
+
+  # 提示用户输入文件路径，提供默认值，并让用户可以不输入路径
+  read -p "请输入指纹文件路径例：/opt/ARL/misc/finger.json（留空以使用默认的 finger.json）: " finger_file
+
+  # 如果用户没有输入文件路径，则使用默认路径
+  finger_file=${finger_file:-$download_dir/finger.json}
+
+  # 检查 ADD-ARL-Finger.py 是否存在，如果不存在则下载
+  if [ ! -s "$download_dir/ADD-ARL-Finger.py" ]; then
+    echo "ADD-ARL-Finger.py 不存在，正在下载..."
+    # 假设脚本可以从以下 URL 下载
+    script_url="https://raw.gitcode.com/msmoshang/ADD-ARL-Finger/blobs/29d142c75881c6c75d7a20bae4f5c33a5b08bf81/ADD-ARL-finger.py"
+    wget -O "$download_dir/ADD-ARL-Finger.py" "$script_url"
+    
+    # 检查下载是否成功
+    if [ ! -s "$download_dir/ADD-ARL-Finger.py" ]; then
+      echo "错误: 无法下载 ADD-ARL-Finger.py 脚本。"
+      exit 1
     fi
-  else
-    echo "错误: ARL-Finger-ADD.py 文件不存在或为空。"
   fi
+
+  # 检查指纹文件是否存在，如果不存在则下载
+  if [ ! -s "$finger_file" ]; then
+    echo "指纹文件 $finger_file 不存在，正在下载..."
+    # 假设指纹文件可以从以下 URL 下载
+    finger_url="https://raw.gitcode.com/msmoshang/ARL/blobs/882cce400c6038c71f168e7d2bc180fedb5ca8f0/finger.json"
+    wget -O "$finger_file" "$finger_url"
+    
+    # 检查下载是否成功
+    if [ ! -s "$finger_file" ]; then
+      echo "错误: 无法下载指纹文件。"
+      exit 1
+    fi
+  fi
+
+  # 执行指纹添加操作
+  echo "添加指纹（使用文件路径: $finger_file）"
+  python3.6 "$download_dir/ADD-ARL-Finger.py" "$target_url" "$admin_user" "$admin_pass" "$method" "$finger_file"
 }
+
 
 sources_shell(){
     echo "换源"
