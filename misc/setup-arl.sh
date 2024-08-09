@@ -1,7 +1,9 @@
 #!/bin/bash
 #set -e
+#添加指纹
 add_finger() {
   check_and_install_docker_tools
+  
   # 检查 /opt/ARL/misc 目录是否存在
   if [ -d /opt/ARL/misc ]; then
     cd /opt/ARL/misc
@@ -70,12 +72,23 @@ add_finger() {
     fi
   fi
 
+  # 检查 Python 版本，优先使用 python3.6，若不存在则使用 python3
+  if command -v python3.6 &>/dev/null; then
+    python_cmd="python3.6"
+  elif command -v python3 &>/dev/null; then
+    python_cmd="python3"
+  else
+    echo "错误: 系统中未找到 python3.6 或 python3。"
+    exit 1
+  fi
+
   # 执行指纹添加操作
   echo "添加指纹（使用文件路径: $finger_file）"
-  python3.6 "$download_dir/ADD-ARL-Finger.py" "$target_url" "$admin_user" "$admin_pass" "$method" "$finger_file"
+  $python_cmd "$download_dir/ADD-ARL-Finger.py" "$target_url" "$admin_user" "$admin_pass" "$method" "$finger_file"
 }
 
 
+#换源
 sources_shell(){
     echo "换源"
     echo "该脚本来自 （https://github.com/SuperManito/LinuxMirrors）"
@@ -171,6 +184,7 @@ if sestatus | grep "SELinux status" | grep -q "enabled"; then
 fi
 }
 
+#检测系统版本
 fixed_check_osver() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -196,7 +210,7 @@ fixed_check_osver() {
   esac
 }
 
-
+#检测pyyaml安装的现版本并覆盖
 check_and_install_pyyaml() {
   required_version="5.4.1"
   installed_version=$(pip3.6 show PyYAML | grep Version | cut -d ' ' -f 2)
@@ -229,6 +243,7 @@ fi
 
 }
 
+#国内检测Dockere安装
 check_install_docker_CN(){
 MAX_ATTEMPTS=3
 attempt=0
@@ -308,6 +323,7 @@ else
 fi
 }
 
+#国内检测docker-compose安装
 check_install_docker-compose_CN(){
 echo "安装Docker Compose"
 MAX_ATTEMPTS=3
@@ -364,6 +380,7 @@ else
 fi
 }
 
+#国外检测docker-compose安装
 check_install_docker-compose() {
 echo "安装docker compose"
 
@@ -408,7 +425,7 @@ else
 fi
 }
 
-
+#检测Docker安装
 check_install_docker(){
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -471,6 +488,7 @@ else
 fi
 }
 
+#检测Docker运行状态
 check_run_docker() {
 status=$(systemctl is-active docker)
 if [ "$status" = "active" ] ; then
@@ -490,6 +508,7 @@ else
 fi
 }
 
+#卸载docker和镜像为完成
 uninstall_docker(){
 
 # 检查容器是否在运行中，如果是，强制停止容器
