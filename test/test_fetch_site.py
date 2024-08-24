@@ -4,7 +4,7 @@ from app import services
 
 class TestDomain(unittest.TestCase):
     def test_fetch_site(self):
-        sites = ["https://www.baidu.com"]
+        sites = ["https://dappweb-pre.huolala.cn/"]
         data = services.fetch_site(sites, concurrency=2)
         self.assertTrue(len(data) >= 1)
         self.assertTrue(len(data[0]["finger"]) >= 3)

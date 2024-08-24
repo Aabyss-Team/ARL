@@ -26,9 +26,12 @@ class SiteScreenshot(BaseThread):
                           '-u={}'.format(site),
                           '-s={}'.format(file_name),
                           ]
-        logger.debug("screenshot {}".format(" ".join(cmd_parameters)))
-
-        utils.exec_system(cmd_parameters)
+        cmd = " ".join(cmd_parameters)
+        logger.debug("screenshot {}".format(cmd))
+    
+        ret = utils.exec_system(cmd_parameters)
+        if ret.returncode != 0:
+            logger.warning(f'Command failed with return code: {ret.returncode},with cmd: {cmd}')
 
         self.screenshot_map[site] = file_name
 

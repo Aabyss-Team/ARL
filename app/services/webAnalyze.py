@@ -23,7 +23,14 @@ class WebAnalyze(BaseThread):
 
         output = utils.check_output(cmd_parameters, timeout=20)
         output = output.decode('utf-8')
-        self.analyze_map[site] = json.loads(output)["applications"]
+        try:
+            if output:
+                json_line = output.split('\n')[0]
+                self.analyze_map[site] = json.loads(json_line)["applications"]
+            else:
+                self.analyze_map[site] = []
+        except:
+            logger.error(f"web analyze return not json: {output}")
 
     def run(self):
         t1 = time.time()

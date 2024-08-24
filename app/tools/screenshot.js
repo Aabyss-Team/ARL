@@ -25,9 +25,9 @@ function screenshot(url, save_name) {
     page.open(url, function (status) {
         //console.debug(status);
         if (status === "success") {
-            return window.setTimeout(pageRender, 100);
+            return window.setTimeout(pageRender, 2000);
         } else {
-            return window.setTimeout(pageRender, 100);
+            return window.setTimeout(pageRender, 2000);
         }
     });
 
