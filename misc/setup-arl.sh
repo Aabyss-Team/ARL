@@ -155,7 +155,7 @@ check_and_install_git() {
 
 #国内安装时检测一些必要命令
 check_and_install_docker_tools() {
-    tools=("wget" "tar")
+    tools=("wget" "tar" "iptables")
 
     for tool in "${tools[@]}"; do
         if ! command -v $tool &> /dev/null; then
