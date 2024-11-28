@@ -155,7 +155,7 @@ check_and_install_git() {
 
 #国内安装时检测一些必要命令
 check_and_install_docker_tools() {
-    tools=("wget" "tar")
+    tools=("wget" "tar" "iptables")
 
     for tool in "${tools[@]}"; do
         if ! command -v $tool &> /dev/null; then
@@ -394,16 +394,109 @@ else
 fi
 }
 
-#国外检测docker-compose安装
-check_install_docker-compose() {
-echo "安装docker compose"
-
-TAG=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-url="https://github.com/docker/compose/releases/download/$TAG/docker-compose-$(uname -s)-$(uname -m)"
+#国外检测Dockere安装
+check_install_docker(){
 MAX_ATTEMPTS=3
 attempt=0
 success=false
+cpu_arch=$(uname -m)
+save_path="/opt/docker_tgz"
+mkdir -p $save_path
+docker_ver="docker-27.1.1.tgz"
+
+case $cpu_arch in
+  "arm64" | "aarch64")
+    url="https://download.docker.com/linux/static/stable/aarch64/$docker_ver"
+    ;;
+  "x86_64")
+    url="https://download.docker.com/linux/static/stable/x86_64/$docker_ver"
+    ;;
+  *)
+    echo "不支持的CPU架构: $cpu_arch"
+    exit 1
+    ;;
+esac
+
+check_and_install_docker_tools
+
+if ! command -v docker &> /dev/null; then
+  while [ $attempt -lt $MAX_ATTEMPTS ]; do
+    attempt=$((attempt + 1))
+    echo "Docker 未安装，正在进行安装..."
+    wget -P "$save_path" "$url"
+    if [ $? -eq 0 ]; then
+        success=true
+        break
+    fi
+    echo "Docker 安装失败，正在尝试重新下载 (尝试次数: $attempt)"
+  done
+
+  if $success; then
+     tar -xzf $save_path/$docker_ver -C $save_path
+     \cp $save_path/docker/* /usr/bin/
+     rm -rf $save_path
+     echo "Docker 安装成功，版本为：$(docker --version)"
+     
+     cat > /usr/lib/systemd/system/docker.service <<EOF
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network-online.target firewalld.service
+Wants=network-online.target
+[Service]
+Type=notify
+ExecStart=/usr/bin/dockerd
+ExecReload=/bin/kill -s HUP 
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+TimeoutStartSec=0
+Delegate=yes
+KillMode=process
+Restart=on-failure
+StartLimitBurst=3
+StartLimitInterval=60s
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl daemon-reload
+    systemctl restart docker
+    check_run_docker
+    systemctl enable docker
+  else
+    echo "Docker 安装失败，请尝试手动安装"
+    exit 1
+  fi
+else 
+    echo "Docker 已安装，安装版本为：$(docker --version)"
+    systemctl restart docker
+    check_run_docker
+fi
+}
+
+#国外检测docker-compose安装
+#国内检测docker-compose安装
+check_install_docker-compose(){
+echo "安装Docker Compose"
+MAX_ATTEMPTS=3
+attempt=0
+cpu_arch=$(uname -m)
+success=false
 save_path="/usr/local/bin"
+
+case $cpu_arch in
+  "arm64" | "aarch64")
+    url="https://raw.githubusercontent.com/msmoshang/arl_files/refs/heads/master/docker/aarch64/docker-compose-linux-aarch64"
+    ;;
+  "x86_64")
+    url="https://raw.githubusercontent.com/msmoshang/arl_files/refs/heads/master/docker/x86_64/docker-compose-linux-x86_64"
+    ;;
+  *)
+    echo "不支持的CPU架构: $cpu_arch"
+    exit 1
+    ;;
+esac
+
 
 chmod +x $save_path/docker-compose &>/dev/null
 if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)" ]; then
@@ -435,70 +528,7 @@ if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)
     fi
 else
     chmod +x $save_path/docker-compose
-    echo "Docker Compose 已经安装，版本为：$(docker-compose --version)"
-fi
-}
-
-#检测Docker安装
-check_install_docker(){
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-else
-    echo "无法确定发行版"
-    exit 1
-fi
-if [ "$ID" = "centos" ] ; then
-    if ! command -v docker &> /dev/null;then
-        echo "Docker 未安装，正在进行安装..."
-        sudo yum install -y yum-utils
-        sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-        sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-        docker --version
-        check_run_docker
-      else
-        echo "Docker 已经安装"
-        echo "Docker版本为： $(docker --version)"  
-        check_run_docker
-    fi
-elif [ "$ID" == "ubuntu" ]; then
-    if ! command -v docker &> /dev/null;then
-        echo "Docker 未安装，正在进行安装..."
-        sudo apt-get update
-        sudo apt-get install ca-certificates curl -y
-        sudo install -m 0755 -d /etc/apt/keyrings
-        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-        sudo chmod a+r /etc/apt/keyrings/docker.asc
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
-        sudo apt-get update -y
-        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-        docker --version
-        check_run_docker
-      else
-        echo "Docker 已经安装"
-        echo "Docker版本为： $(docker --version)"  
-        check_run_docker
-    fi
-elif [ "$ID" = "debian"]; then
-    if ! command -v docker &> /dev/null;then
-        echo "Docker 未安装，正在进行安装..."
-        sudo apt-get update
-        sudo apt-get install ca-certificates curl
-        sudo install -m 0755 -d /etc/apt/keyrings
-        sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-        sudo chmod a+r /etc/apt/keyrings/docker.asc
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
-        sudo apt-get update -y
-        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-        docker --version
-        check_run_docker
-      else
-        echo "Docker 已经安装"
-        echo "Docker版本为： $(docker --version)"  
-        check_run_docker
-    fi
-else
-    echo "不支持的操作系统."
-    exit 1
+    echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
 fi
 }
 
