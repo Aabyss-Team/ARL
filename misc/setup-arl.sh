@@ -474,8 +474,9 @@ else
 fi
 }
 
+#国外检测docker-compose安装
 #国内检测docker-compose安装
-check_install_docker-compose_CN(){
+check_install_docker-compose(){
 echo "安装Docker Compose"
 MAX_ATTEMPTS=3
 attempt=0
@@ -530,7 +531,6 @@ else
     echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
 fi
 }
-
 
 #检测Docker运行状态
 check_run_docker() {
