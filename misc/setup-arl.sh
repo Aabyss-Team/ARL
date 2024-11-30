@@ -1,6 +1,32 @@
 #!/bin/bash
 #set -e
-#添加指纹
+#ip查询
+ipinfo(){
+  ip=$(curl -s https://ipinfo.io/ip)
+  echo -e "\e[40;38;5;82m ARL访问链接为 \e[30;48;5;82m https://$ip:5003 \e[0m"
+}
+
+#用户密码生成
+rand_pass(){
+# 使用日期和 sha256sum 生成随机字符串，截取前16位作为密码
+RANDOM_PASS=$(date +%s%N | sha256sum | base64 | head -c 16)
+
+# 定义盐值
+SALT="arlsalt!@#"
+
+# 创建 mongo-init.js 文件并写入内容
+cat <<EOF > /opt/ARL/docker/mongo-init.js
+db.user.drop()
+db.user.insert({ username: 'admin',  password: hex_md5('${SALT}'+'${RANDOM_PASS}') })
+EOF
+
+}
+
+out_pass(){
+  echo -e "\e[40;38;5;82m 用户名为: \e[30;48;5;82m admin \e[0m"
+  echo -e "\e[40;38;5;82m 随机密码为: \e[30;48;5;82m $RANDOM_PASS \e[0m"
+}
+
 add_finger() {
   check_and_install_docker_tools
   
@@ -247,8 +273,6 @@ fi
 #停止ARL容器并删除
 uninstall_docker(){
 
-#!/bin/bash
-
 # 定义要操作的容器名称数组
 containers=("arl_rabbitmq" "arl_mongodb" "arl_web" "arl_work" "arl_scheduler")
 
@@ -273,27 +297,6 @@ for container in "${containers[@]}"; do
     else
         echo "容器 $container 未找到已停止状态，无法删除。"
     fi
-done
-
-# 获取与指定容器相关的镜像名称
-echo "正在获取与指定容器相关的镜像名称..."
-image_names=()
-for container in "${containers[@]}"; do
-    container_id=$(docker ps -a -q --filter "name=$container" --filter "status=exited")
-    image_name=$(docker inspect -f '{{.Config.Image}}' $container_id)
-    if [ -n "$image_name" ]; then
-        image_names+=("$image_name")
-    fi
-done
-
-# 去重处理镜像名称数组
-unique_image_names=($(echo "${image_names[@]}" | tr's''\n' | sort -u | tr '\n''s'))
-
-# 删除相关镜像
-echo "正在删除与指定容器相关的镜像..."
-for image_name in "${unique_image_names[@]}"; do
-    docker rmi $image_name
-    echo "已删除镜像：$image_name"
 done
 }
 
@@ -828,6 +831,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -1099,6 +1103,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -1327,6 +1332,7 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
     rabbitmqctl set_user_tags arl arltag
     rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
     echo "init arl user"
+    rand_pass
     mongo 127.0.0.1:27017/arl docker/mongo-init.js
     touch rabbitmq_user
   fi
@@ -1556,6 +1562,7 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
     rabbitmqctl set_user_tags arl arltag
     rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
     echo "init arl user"
+    rand_pass
     mongo 127.0.0.1:27017/arl docker/mongo-init.js
     touch rabbitmq_user
   fi
@@ -1782,6 +1789,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -2055,6 +2063,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -2297,11 +2306,15 @@ case $code_id in
           case "$code_deploy" in
               1)
                   code_install
+                  ipinfo
+                  out_pass
                   break;;
               2)
                   code_install_CN
+                  ipinfo
+                  out_pass
                   break;;
-              * )
+              *)
                   echo "请输入 1 表示国外 或者 2 表示国内";;
           esac
       done
