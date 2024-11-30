@@ -688,25 +688,7 @@ for container in "${containers[@]}"; do
         echo "容器 $container 未找到已停止状态，无法删除。"
     fi
 done
-# 获取与指定容器相关的镜像名称
-echo "正在获取与指定容器相关的镜像名称..."
-image_names=()
-for container in "${containers[@]}"; do
-    image_name=$(docker inspect -f '{{.Config.Image}}' $container_id)
-    if [ -n "$image_name" ]; then
-        image_names+=("$image_name")
-    end
-done
 
-# 去重处理镜像名称数组
-unique_image_names=($(echo "${image_names[@]}" | tr's''\n' | sort -u | tr '\n''s'))
-
-# 删除相关镜像
-echo "正在删除与指定容器相关的镜像..."
-for image_name in "${unique_image_names[@]}"; do
-    docker rmi $image_name
-    echo "已删除镜像：$image_name"
-done
 }
 
 #国内Centos7安装
