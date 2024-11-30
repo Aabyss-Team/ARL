@@ -64,8 +64,6 @@ Docker安装暂时提供单个选择，如下：
 1) honmashironeko/ARL-docker：本间白猫ARL-Docker版
 ```
 
-- 如果选择1进行Docker安装，直接拉取镜像运行容器即可，不需要额外操作，请前往`https://IP:5003/`：账号：`admin`，密码：`arlpass`
-
 执行完脚本确认没报错后，请前往ARL-Web页面：`https://IP:5003/`：账号：`admin`，密码：`honmashironeko`
 
 > ~~本项目已经替换完毕：如需构建本项目，在拉取和运行脚本时，要将 `TophantTechnology/ARL` / `1c3z/ARL-NPoC` / `1c3z/arl_files` 这三个字符串替换为 `Aabyss-Team/ARL` / `Aabyss-Team/ARL-NPoC` / `Aabyss-Team/arl_files`~~
