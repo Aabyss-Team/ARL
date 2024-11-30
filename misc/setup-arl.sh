@@ -247,6 +247,8 @@ fi
 #停止ARL容器并删除
 uninstall_docker(){
 
+#!/bin/bash
+
 # 定义要操作的容器名称数组
 containers=("arl_rabbitmq" "arl_mongodb" "arl_web" "arl_work" "arl_scheduler")
 
@@ -273,6 +275,26 @@ for container in "${containers[@]}"; do
     fi
 done
 
+# 获取与指定容器相关的镜像名称
+echo "正在获取与指定容器相关的镜像名称..."
+image_names=()
+for container in "${containers[@]}"; do
+    container_id=$(docker ps -a -q --filter "name=$container" --filter "status=exited")
+    image_name=$(docker inspect -f '{{.Config.Image}}' $container_id)
+    if [ -n "$image_name" ]; then
+        image_names+=("$image_name")
+    fi
+done
+
+# 去重处理镜像名称数组
+unique_image_names=($(echo "${image_names[@]}" | tr's''\n' | sort -u | tr '\n''s'))
+
+# 删除相关镜像
+echo "正在删除与指定容器相关的镜像..."
+for image_name in "${unique_image_names[@]}"; do
+    docker rmi $image_name
+    echo "已删除镜像：$image_name"
+done
 }
 
 #检测pyyaml安装的现版本并覆盖
