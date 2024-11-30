@@ -224,6 +224,57 @@ fixed_check_osver() {
   esac
 }
 
+#检测Docker运行状态
+check_run_docker() {
+status=$(systemctl is-active docker)
+if [ "$status" = "active" ] ; then
+      echo "Docker运行正常"   
+elif [ "$status" = "inactive" ] || [ "$status" = "unknown" ] ; then
+    echo "Docker 服务未运行，正在尝试启动"
+    run=$(systemctl start docker)
+  if [ "$?" = "0" ] ; then
+        echo "Docker 启动成功"
+    else
+        echo "Docker 启动失败"
+        exit 1
+fi
+else
+    echo "无法确定Docker状态"
+    exit 1
+fi
+}
+
+#停止ARL容器并删除
+uninstall_docker(){
+
+# 定义要操作的容器名称数组
+containers=("arl_rabbitmq" "arl_mongodb" "arl_web" "arl_work" "arl_scheduler")
+
+# 停止指定的容器
+echo "正在停止指定容器..."
+for container in "${containers[@]}"; do
+    docker_stop_command=$(docker stop $(docker ps -a -q --filter "name=$container"))
+    if [ $? -eq 0 ]; then
+        echo "容器 $container 停止成功。"
+    else
+        echo "容器 $container 停止失败，请检查。"
+    fi
+done
+
+# 删除指定的已停止容器
+echo "正在删除已停止的指定容器..."
+for container in "${containers[@]}"; do
+    container_id=$(docker ps -a -q --filter "name=$container" --filter "status=exited")
+    if [ -n "$container_id" ]; then
+        docker rm $container_id
+        echo "已删除容器 $container （ID：$container_id）。"
+    else
+        echo "容器 $container 未找到已停止状态，无法删除。"
+    fi
+done
+
+}
+
 #检测pyyaml安装的现版本并覆盖
 check_and_install_pyyaml() {
   required_version="5.4.1"
@@ -637,54 +688,6 @@ else
     chmod +x $save_path/docker-compose
     echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
 fi
-}
-
-
-#检测Docker运行状态
-check_run_docker() {
-status=$(systemctl is-active docker)
-if [ "$status" = "active" ] ; then
-      echo "Docker运行正常"   
-elif [ "$status" = "inactive" ] || [ "$status" = "unknown" ] ; then
-    echo "Docker 服务未运行，正在尝试启动"
-    run=$(systemctl start docker)
-  if [ "$?" = "0" ] ; then
-        echo "Docker 启动成功"
-    else
-        echo "Docker 启动失败"
-        exit 1
-fi
-else
-    echo "无法确定Docker状态"
-    exit 1
-fi
-}
-
-#停止ARL容器并删除
-uninstall_docker(){
-# 定义要操作的容器名称数组
-containers=("arl_rabbitmq" "arl_mongodb" "arl_web" "arl_work" "arl_scheduler")
-# 停止指定的容器
-echo "正在停止指定容器..."
-for container in "${containers[@]}"; do
-    docker_stop_command=$(docker stop $(docker ps -a -q --filter "name=$container"))
-    if [ $? -eq 0 ]; then
-        echo "容器 $container 停止成功。"
-    else
-        echo "容器 $container 停止失败，请检查。"
-    fi
-done
-# 删除指定的已停止容器
-echo "正在删除已停止的指定容器..."
-for container in "${containers[@]}"; do
-    container_id=$(docker ps -a -q --filter "name=$container" --filter "status=exited")
-    if [ -n "$container_id" ]; then
-        docker rm $container_id
-        echo "已删除容器 $container （ID：$container_id）。"
-    else
-        echo "容器 $container 未找到已停止状态，无法删除。"
-    fi
-done
 }
 
 #国内Centos7安装
