@@ -662,10 +662,8 @@ fi
 
 #停止ARL容器并删除
 uninstall_docker(){
-
 # 定义要操作的容器名称数组
 containers=("arl_rabbitmq" "arl_mongodb" "arl_web" "arl_work" "arl_scheduler")
-
 # 停止指定的容器
 echo "正在停止指定容器..."
 for container in "${containers[@]}"; do
@@ -676,7 +674,6 @@ for container in "${containers[@]}"; do
         echo "容器 $container 停止失败，请检查。"
     fi
 done
-
 # 删除指定的已停止容器
 echo "正在删除已停止的指定容器..."
 for container in "${containers[@]}"; do
@@ -688,7 +685,6 @@ for container in "${containers[@]}"; do
         echo "容器 $container 未找到已停止状态，无法删除。"
     fi
 done
-
 }
 
 #国内Centos7安装
