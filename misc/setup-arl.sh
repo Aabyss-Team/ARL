@@ -674,7 +674,7 @@ for container in "${containers[@]}"; do
         echo "容器 $container 停止成功。"
     else
         echo "容器 $container 停止失败，请检查。"
-    end
+    fi
 done
 
 # 删除指定的已停止容器
@@ -688,7 +688,6 @@ for container in "${containers[@]}"; do
         echo "容器 $container 未找到已停止状态，无法删除。"
     fi
 done
-
 # 获取与指定容器相关的镜像名称
 echo "正在获取与指定容器相关的镜像名称..."
 image_names=()
