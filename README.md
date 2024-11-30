@@ -53,7 +53,9 @@ systemctl status nginx
 ```
 
 源码安装后，请前往ARL-Web页面：`https://IP:5003/`
+
 原账号密码：`admin`,`arlpass`
+
 新版账号密码为随机生成，会打印在控制台
 
 Docker安装暂时提供单个选择，如下：
