@@ -1,6 +1,32 @@
 #!/bin/bash
 #set -e
-#添加指纹
+#ip查询
+ipinfo(){
+  ip=$(curl -s https://ipinfo.io/ip)
+  echo -e "\e[40;38;5;82m ARL访问链接为 \e[30;48;5;82m https://$ip:5003 \e[0m"
+}
+
+#用户密码生成
+rand_pass(){
+# 使用日期和 sha256sum 生成随机字符串，截取前16位作为密码
+RANDOM_PASS=$(date +%s%N | sha256sum | base64 | head -c 16)
+
+# 定义盐值
+SALT="arlsalt!@#"
+
+# 创建 mongo-init.js 文件并写入内容
+cat <<EOF > /opt/ARL/docker/mongo-init.js
+db.user.drop()
+db.user.insert({ username: 'admin',  password: hex_md5('${SALT}'+'${RANDOM_PASS}') })
+EOF
+
+}
+
+out_pass(){
+  echo -e "\e[40;38;5;82m 用户名为: \e[30;48;5;82m admin \e[0m"
+  echo -e "\e[40;38;5;82m 随机密码为: \e[30;48;5;82m $RANDOM_PASS \e[0m"
+}
+
 add_finger() {
   check_and_install_docker_tools
   
@@ -224,6 +250,56 @@ fixed_check_osver() {
   esac
 }
 
+#检测Docker运行状态
+check_run_docker() {
+status=$(systemctl is-active docker)
+if [ "$status" = "active" ] ; then
+      echo "Docker运行正常"   
+elif [ "$status" = "inactive" ] || [ "$status" = "unknown" ] ; then
+    echo "Docker 服务未运行，正在尝试启动"
+    run=$(systemctl start docker)
+  if [ "$?" = "0" ] ; then
+        echo "Docker 启动成功"
+    else
+        echo "Docker 启动失败"
+        exit 1
+fi
+else
+    echo "无法确定Docker状态"
+    exit 1
+fi
+}
+
+#停止ARL容器并删除
+uninstall_docker(){
+
+# 定义要操作的容器名称数组
+containers=("arl_rabbitmq" "arl_mongodb" "arl_web" "arl_work" "arl_scheduler")
+
+# 停止指定的容器
+echo "正在停止指定容器..."
+for container in "${containers[@]}"; do
+    docker_stop_command=$(docker stop $(docker ps -a -q --filter "name=$container"))
+    if [ $? -eq 0 ]; then
+        echo "容器 $container 停止成功。"
+    else
+        echo "容器 $container 停止失败，请检查。"
+    fi
+done
+
+# 删除指定的已停止容器
+echo "正在删除已停止的指定容器..."
+for container in "${containers[@]}"; do
+    container_id=$(docker ps -a -q --filter "name=$container" --filter "status=exited")
+    if [ -n "$container_id" ]; then
+        docker rm $container_id
+        echo "已删除容器 $container （ID：$container_id）。"
+    else
+        echo "容器 $container 未找到已停止状态，无法删除。"
+    fi
+done
+}
+
 #检测pyyaml安装的现版本并覆盖
 check_and_install_pyyaml() {
   required_version="5.4.1"
@@ -394,6 +470,114 @@ else
 fi
 }
 
+# #国外检测docker-compose安装
+# check_install_docker-compose() {
+# echo "安装docker compose"
+
+# TAG=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+# url="https://github.com/docker/compose/releases/download/$TAG/docker-compose-$(uname -s)-$(uname -m)"
+# MAX_ATTEMPTS=3
+# attempt=0
+# success=false
+# save_path="/usr/local/bin"
+
+# chmod +x $save_path/docker-compose &>/dev/null
+# if ! command -v docker-compose &> /dev/null || [ -z "$(docker-compose --version)" ]; then
+#     echo "Docker Compose 未安装或安装不完整，正在进行安装..."    
+#     while [ $attempt -lt $MAX_ATTEMPTS ]; do
+#         attempt=$((attempt + 1))
+#         wget --continue -q $url -O $save_path/docker-compose
+#         if [ $? -eq 0 ]; then
+#             chmod +x $save_path/docker-compose
+#             version_check=$(docker-compose --version)
+#             if [ -n "$version_check" ]; then
+#                 success=true
+#                 chmod +x $save_path/docker-compose
+#                 break
+#             else
+#                 echo "Docker Compose 下载的文件不完整，正在尝试重新下载 (尝试次数: $attempt)"
+#                 rm -f $save_path/docker-compose
+#             fi
+#         fi
+
+#         echo "Docker Compose 下载失败，正在尝试重新下载 (尝试次数: $attempt)"
+#     done
+
+#     if $success; then
+#         echo "Docker Compose 安装成功，版本为：$(docker-compose --version)"
+#     else
+#         echo "Docker Compose 下载失败，请尝试手动安装docker-compose"
+#         exit 1
+#     fi
+# else
+#     chmod +x $save_path/docker-compose
+#     echo "Docker Compose 已经安装，版本为：$(docker-compose --version)"
+# fi
+# }
+
+# #检测Docker安装
+# check_install_docker(){
+# if [ -f /etc/os-release ]; then
+#     . /etc/os-release
+# else
+#     echo "无法确定发行版"
+#     exit 1
+# fi
+# if [ "$ID" = "centos" ] ; then
+#     if ! command -v docker &> /dev/null;then
+#         echo "Docker 未安装，正在进行安装..."
+#         sudo yum install -y yum-utils
+#         sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#         sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+#         docker --version
+#         check_run_docker
+#       else
+#         echo "Docker 已经安装"
+#         echo "Docker版本为： $(docker --version)"  
+#         check_run_docker
+#     fi
+# elif [ "$ID" == "ubuntu" ]; then
+#     if ! command -v docker &> /dev/null;then
+#         echo "Docker 未安装，正在进行安装..."
+#         sudo apt-get update
+#         sudo apt-get install ca-certificates curl -y
+#         sudo install -m 0755 -d /etc/apt/keyrings
+#         sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+#         sudo chmod a+r /etc/apt/keyrings/docker.asc
+#         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
+#         sudo apt-get update -y
+#         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+#         docker --version
+#         check_run_docker
+#       else
+#         echo "Docker 已经安装"
+#         echo "Docker版本为： $(docker --version)"  
+#         check_run_docker
+#     fi
+# elif [ "$ID" = "debian"]; then
+#     if ! command -v docker &> /dev/null;then
+#         echo "Docker 未安装，正在进行安装..."
+#         sudo apt-get update
+#         sudo apt-get install ca-certificates curl
+#         sudo install -m 0755 -d /etc/apt/keyrings
+#         sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+#         sudo chmod a+r /etc/apt/keyrings/docker.asc
+#         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list
+#         sudo apt-get update -y
+#         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+#         docker --version
+#         check_run_docker
+#       else
+#         echo "Docker 已经安装"
+#         echo "Docker版本为： $(docker --version)"  
+#         check_run_docker
+#     fi
+# else
+#     echo "不支持的操作系统."
+#     exit 1
+# fi
+# }
+
 #国外检测Dockere安装
 check_install_docker(){
 MAX_ATTEMPTS=3
@@ -474,7 +658,6 @@ else
 fi
 }
 
-#国外检测docker-compose安装
 #国内检测docker-compose安装
 check_install_docker-compose(){
 echo "安装Docker Compose"
@@ -532,38 +715,6 @@ else
 fi
 }
 
-#检测Docker运行状态
-check_run_docker() {
-status=$(systemctl is-active docker)
-if [ "$status" = "active" ] ; then
-      echo "Docker运行正常"   
-elif [ "$status" = "inactive" ] || [ "$status" = "unknown" ] ; then
-    echo "Docker 服务未运行，正在尝试启动"
-    run=$(systemctl start docker)
-  if [ "$?" = "0" ] ; then
-        echo "Docker 启动成功"
-    else
-        echo "Docker 启动失败"
-        exit 1
-fi
-else
-    echo "无法确定Docker状态"
-    exit 1
-fi
-}
-
-#卸载docker和镜像为完成
-uninstall_docker(){
-
-# 检查容器是否在运行中，如果是，强制停止容器
-if [ "$(docker ps -aq -f name=arl)" ]; then
-    docker stop arl
-    docker rm -f arl
-    echo "容器 arl 停止"
-fi
-docker rmi moshangms/arl-test:latest
-}
-
 #国内Centos7安装
 install_for_centos_CN() {
 
@@ -610,9 +761,9 @@ fi
 
 if ! command -v nuclei &> /dev/null
 then
-  echo "install nuclei_3.3.0 ..."
-  wget https://raw.gitcode.com/msmoshang/arl_files/blobs/fb1f668e8733eea99153aed322db879cfa240d84/nuclei_3.3.0_linux_amd64.zip
-  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
+  echo "install nuclei_3.3.6 ..."
+  wget https://raw.gitcode.com/msmoshang/arl_files/blobs/fa23520b5fba6b6153d302e02cfcfb39756d90d9/nuclei_3.3.6_linux_amd64.zip
+  unzip nuclei_3.3.6_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.6_linux_amd64.zip
   nuclei -ut
 fi
 
@@ -680,6 +831,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -879,9 +1031,9 @@ fi
 
 if ! command -v nuclei &> /dev/null
 then
-  echo "install nuclei_3.3.0 ..."
-  wget https://raw.gitcode.com/msmoshang/arl_files/blobs/fb1f668e8733eea99153aed322db879cfa240d84/nuclei_3.3.0_linux_amd64.zip
-  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
+  echo "install nuclei_3.3.6 ..."
+  wget https://raw.gitcode.com/msmoshang/arl_files/blobs/fa23520b5fba6b6153d302e02cfcfb39756d90d9/nuclei_3.3.6_linux_amd64.zip
+  unzip nuclei_3.3.6_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.6_linux_amd64.zip
   nuclei -ut
 fi
 
@@ -951,6 +1103,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -1110,9 +1263,9 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
   fi
 
   if ! command -v nuclei &> /dev/null; then
-    echo "install nuclei_3.3.0 ..."
-    wget https://raw.gitcode.com/msmoshang/arl_files/blobs/fb1f668e8733eea99153aed322db879cfa240d84/nuclei_3.3.0_linux_amd64.zip
-    unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
+    echo "install nuclei_3.3.6 ..."
+    wget https://raw.gitcode.com/msmoshang/arl_files/blobs/fa23520b5fba6b6153d302e02cfcfb39756d90d9/nuclei_3.3.6_linux_amd64.zip
+    unzip nuclei_3.3.6_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.6_linux_amd64.zip
     nuclei -ut
   fi
 
@@ -1179,6 +1332,7 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
     rabbitmqctl set_user_tags arl arltag
     rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
     echo "init arl user"
+    rand_pass
     mongo 127.0.0.1:27017/arl docker/mongo-init.js
     touch rabbitmq_user
   fi
@@ -1339,9 +1493,9 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
   fi
 
   if ! command -v nuclei &> /dev/null; then
-    echo "install nuclei_3.3.0 ..."
-    wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.0/nuclei_3.3.0_linux_amd64.zip
-    unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
+    echo "install nuclei_3.3.6 ..."
+    wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.6/nuclei_3.3.6_linux_amd64.zip
+    unzip nuclei_3.3.6_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.6_linux_amd64.zip
     nuclei -ut
   fi
 
@@ -1408,6 +1562,7 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | \
     rabbitmqctl set_user_tags arl arltag
     rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
     echo "init arl user"
+    rand_pass
     mongo 127.0.0.1:27017/arl docker/mongo-init.js
     touch rabbitmq_user
   fi
@@ -1561,9 +1716,9 @@ fi
 
 if ! command -v nuclei &> /dev/null
 then
-  echo "install nuclei_3.3.0 ..."
-  wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.0/nuclei_3.3.0_linux_amd64.zip
-  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
+  echo "install nuclei_3.3.6 ..."
+  wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.6/nuclei_3.3.6_linux_amd64.zip
+  unzip nuclei_3.3.6_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.6_linux_amd64.zip
   nuclei -ut
 fi
 
@@ -1634,6 +1789,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -1834,9 +1990,9 @@ fi
 
 if ! command -v nuclei &> /dev/null
 then
-  echo "install nuclei_3.3.0 ..."
-  wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.0/nuclei_3.3.0_linux_amd64.zip
-  unzip nuclei_3.3.0_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.0_linux_amd64.zip
+  echo "install nuclei_3.3.6 ..."
+  wget https://github.com/projectdiscovery/nuclei/releases/download/v3.3.6/nuclei_3.3.6_linux_amd64.zip
+  unzip nuclei_3.3.6_linux_amd64.zip && mv nuclei /usr/bin/ && rm -f nuclei_3.3.6_linux_amd64.zip
   nuclei -ut
 fi
 
@@ -1907,6 +2063,7 @@ if [ ! -f rabbitmq_user ]; then
   rabbitmqctl set_user_tags arl arltag
   rabbitmqctl set_permissions -p arlv2host arl ".*" ".*" ".*"
   echo "init arl user"
+  rand_pass
   mongo 127.0.0.1:27017/arl docker/mongo-init.js
   touch rabbitmq_user
 fi
@@ -2105,21 +2262,9 @@ case $version_choice in
         chmod +x setup_docker.sh
         bash setup_docker.sh
         ;;
-    # 2)
-    #     echo "正在拉取 Docker 镜像：arl-docker-initial..."
-    #     docker pull honmashironeko/arl-docker-initial
-    #     echo "正在运行 Docker 容器..."
-    #     docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-initial /usr/sbin/init
-    #     ;;
-    # 3)
-    #     echo "正在拉取 Docker 镜像：arl-docker-all..."
-    #     docker pull honmashironeko/arl-docker-all
-    #     echo "正在运行 Docker 容器..."
-    #     docker run -d -p 5003:5003 --name arl --privileged=true honmashironeko/arl-docker-all /usr/sbin/init
-    #     ;;
     *)
-        echo "无效的输入，脚本将退出。"
-        exit 1
+        echo "无效的输入，重新选择"
+        sleep 2; docker_install_menu
         ;;
 esac
 }
@@ -2130,7 +2275,7 @@ echo -e "第一次安装建议进行换源参数在继续安装"
 echo -e "1) 换源 (脚本来自于 https://github.com/SuperManito/LinuxMirrors)"  
 echo -e "2) 源码安装(暂时只支持centos 7 8 and Ubuntu20.04 支持国内外安装)"
 echo -e "3) docker安装 （支持国内外安装，但可能存在抽风问题）"
-echo -e "4) 卸载Docker镜像"
+echo -e "4) 删除并停止ARL镜像"
 echo -e "5) 添加指纹（默认为7k+）只限于源码安装添加指纹"
 echo -e "6) 退出脚本"
 echo "---------------------------------------------------------------"
@@ -2161,11 +2306,15 @@ case $code_id in
           case "$code_deploy" in
               1)
                   code_install
+                  ipinfo
+                  out_pass
                   break;;
               2)
                   code_install_CN
+                  ipinfo
+                  out_pass
                   break;;
-              * )
+              *)
                   echo "请输入 1 表示国外 或者 2 表示国内";;
           esac
       done
@@ -2192,8 +2341,8 @@ case $code_id in
       done
       ;;      
     4)
-        echo "暂时未完成"
         uninstall_docker
+        echo "有缘再见"
         ;;
     5)
         add_finger
