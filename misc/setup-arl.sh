@@ -11,6 +11,8 @@ rand_pass(){
 # 使用日期和 sha256sum 生成随机字符串，截取前16位作为密码
 RANDOM_PASS=$(date +%s%N | sha256sum | base64 | head -c 16)
 
+export RANDOM_PASS
+
 # 定义盐值
 SALT="arlsalt!@#"
 
@@ -25,6 +27,7 @@ EOF
 out_pass(){
   echo -e "\e[40;38;5;82m 用户名为: \e[30;48;5;82m admin \e[0m"
   echo -e "\e[40;38;5;82m 随机密码为: \e[30;48;5;82m $RANDOM_PASS \e[0m"
+  unset RANDOM_PASS
 }
 
 add_finger() {
@@ -926,14 +929,14 @@ systemctl start arl-worker
 systemctl start arl-worker-github
 systemctl start arl-scheduler
 
-
+#禁止分页
 echo "status services"
-systemctl status mongod
-systemctl status rabbitmq-server
-systemctl status arl-web
-systemctl status arl-worker
-systemctl status arl-worker-github
-systemctl status arl-scheduler
+systemctl --no-pager status mongod
+systemctl --no-pager status rabbitmq-server
+systemctl --no-pager status arl-web
+systemctl --no-pager status arl-worker
+systemctl --no-pager status arl-worker-github
+systemctl --no-pager status arl-scheduler
 
 echo "install done"
 
@@ -1197,14 +1200,14 @@ systemctl start arl-worker
 systemctl start arl-worker-github
 systemctl start arl-scheduler
 
-
+#禁止分页
 echo "status services"
-systemctl status mongod
-systemctl status rabbitmq-server
-systemctl status arl-web
-systemctl status arl-worker
-systemctl status arl-worker-github
-systemctl status arl-scheduler
+systemctl --no-pager status mongod
+systemctl --no-pager status rabbitmq-server
+systemctl --no-pager status arl-web
+systemctl --no-pager status arl-worker
+systemctl --no-pager status arl-worker-github
+systemctl --no-pager status arl-scheduler
 
 echo "install done"
 
@@ -1426,14 +1429,14 @@ systemctl start arl-worker
 systemctl start arl-worker-github
 systemctl start arl-scheduler
 
-
+#禁止分页
 echo "status services"
-systemctl status mongod
-systemctl status rabbitmq-server
-systemctl status arl-web
-systemctl status arl-worker
-systemctl status arl-worker-github
-systemctl status arl-scheduler
+systemctl --no-pager status mongod
+systemctl --no-pager status rabbitmq-server
+systemctl --no-pager status arl-web
+systemctl --no-pager status arl-worker
+systemctl --no-pager status arl-worker-github
+systemctl --no-pager status arl-scheduler
 
   echo "install done"
 }
@@ -1656,14 +1659,14 @@ systemctl start arl-worker
 systemctl start arl-worker-github
 systemctl start arl-scheduler
 
-
+#禁止分页
 echo "status services"
-systemctl status mongod
-systemctl status rabbitmq-server
-systemctl status arl-web
-systemctl status arl-worker
-systemctl status arl-worker-github
-systemctl status arl-scheduler
+systemctl --no-pager status mongod
+systemctl --no-pager status rabbitmq-server
+systemctl --no-pager status arl-web
+systemctl --no-pager status arl-worker
+systemctl --no-pager status arl-worker-github
+systemctl --no-pager status arl-scheduler
 
   echo "install done"
 }
@@ -1883,14 +1886,14 @@ systemctl start arl-worker
 systemctl start arl-worker-github
 systemctl start arl-scheduler
 
-
+#禁止分页
 echo "status services"
-systemctl status mongod
-systemctl status rabbitmq-server
-systemctl status arl-web
-systemctl status arl-worker
-systemctl status arl-worker-github
-systemctl status arl-scheduler
+systemctl --no-pager status mongod
+systemctl --no-pager status rabbitmq-server
+systemctl --no-pager status arl-web
+systemctl --no-pager status arl-worker
+systemctl --no-pager status arl-worker-github
+systemctl --no-pager status arl-scheduler
 
 echo "install done"
 
@@ -2157,14 +2160,14 @@ systemctl start arl-worker
 systemctl start arl-worker-github
 systemctl start arl-scheduler
 
-
+#禁止分页
 echo "status services"
-systemctl status mongod
-systemctl status rabbitmq-server
-systemctl status arl-web
-systemctl status arl-worker
-systemctl status arl-worker-github
-systemctl status arl-scheduler
+systemctl --no-pager status mongod
+systemctl --no-pager status rabbitmq-server
+systemctl --no-pager status arl-web
+systemctl --no-pager status arl-worker
+systemctl --no-pager status arl-worker-github
+systemctl --no-pager status arl-scheduler
 
 echo "install done"
 
