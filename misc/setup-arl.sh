@@ -2213,7 +2213,7 @@ case "$os_ver" in
         if [ "$VERSION_ID" == "7" ]; then
             echo "$os_ver"
             check_selinux
-            install_for_centos
+            install_for_centos_CN
         elif [ "$VERSION_ID" == "8" ]; then
             echo "$os_ver"
             check_selinux
