@@ -9,7 +9,7 @@ ipinfo(){
 #用户密码生成
 rand_pass(){
 # 使用日期和 sha256sum 生成随机字符串，截取前16位作为密码
-RANDOM_PASS=$(date +%s%N | sha256sum | base64 | head -c 16)
+RANDOM_PASS=$(tr -cd '[:alnum:]' < /dev/urandom | head -c 16)
 
 export RANDOM_PASS
 
