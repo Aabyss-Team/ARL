@@ -19,7 +19,7 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-# --- 函数 --- (与之前版本相同，已省略)
+# --- 函数 ---
 function systemctl_all() {
   local cmd="$1"
   if [[ -z "$cmd" ]]; then
@@ -37,7 +37,7 @@ function systemctl_all() {
   done
 }
 
-# 各个功能的具体实现 (与之前版本相同)
+# 各个功能的具体实现
 function start() {
   systemctl_all start
 }
@@ -79,6 +79,33 @@ function restart() {
   stop
   start
 }
+
+function reset_password() {
+  echo -e "${YELLOW}正在重置 ARL 管理员密码...${NC}"
+
+  # 检查 MongoDB 服务是否正在运行.  如果mongod 没有运行，则不重置密码.
+  if ! systemctl is-active --quiet mongod; then
+      echo -e "${RED}错误：MongoDB 服务未运行。请先启动 MongoDB。${NC}"
+      return 1
+  fi
+
+
+  # 使用 mongo shell 执行密码重置命令.  这里使用一个Here Document
+  mongo <<EOF
+use arl
+db.user.drop()
+db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') })
+exit
+EOF
+
+  if [[ $? -eq 0 ]]; then
+    echo -e "${GREEN}ARL 管理员密码已重置为 'admin123'。${NC}"
+  else
+    echo -e "${RED}密码重置失败。请检查 MongoDB 连接和脚本中的命令。${NC}"
+  fi
+}
+
+
 # --- 帮助/菜单 ---
 
 function show_menu() {
@@ -99,10 +126,11 @@ function show_menu() {
     echo -e "  ${BOLD}5)${NC} 禁用所有 ARL 服务开机自启 (disable)"
     echo -e "  ${BOLD}6)${NC} 启用所有 ARL 服务开机自启 (enable)"
     echo -e "  ${BOLD}7)${NC} 显示每个 ARL 服务的日志 (log)"
-    echo -e "  ${BOLD}8)${NC} 显示帮助信息 (help)"
-    echo -e "  ${BOLD}9)${NC} 退出 (exit)"
+    echo -e "  ${BOLD}8)${NC} 重置 ARL 管理员密码 (reset-password)"
+    echo -e "  ${BOLD}9)${NC} 显示帮助信息 (help)"
+    echo -e "  ${BOLD}10)${NC} 退出 (exit)"
     echo -e "" #添加空行
-    echo -n "请输入选项编号 [1-9]: "  # 更友好的提示
+    echo -n "请输入选项编号 [1-10]: "  # 更友好的提示
 }
 
 # --- 主脚本逻辑 ---
@@ -124,11 +152,12 @@ while true; do
     5) disable ;;
     6) enable ;;
     7) showLog ;;
-    8)
+    8) reset_password ;;
+    9)
         show_menu
         continue
         ;;
-    9)
+    10)
       echo "退出脚本。"
       exit 0
       ;;
