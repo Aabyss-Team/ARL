@@ -41,7 +41,7 @@ wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
 chmod +x setup-arl.sh
 ./setup-arl.sh
 #国内
-wget https://raw.gitcode.com/msmoshang/ARL/blobs/350687c17d0f2cb5f7f09f2b39476d6f23cc6b48/setup-arl.sh
+wget https://raw.gitcode.com/msmoshang/ARL/blobs/24b06ec7efb32b9be380ab01ebf505e77c7811bf/setup-arl.sh
 chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
