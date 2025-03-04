@@ -73,6 +73,7 @@ function showLog() {
         echo -e "${RED}错误：无法检索 ${service} 的日志${NC}"
     fi
   done
+  read -r -p "按 Enter 键继续..."
 }
 
 function restart() {
@@ -103,6 +104,7 @@ EOF
   else
     echo -e "${RED}密码重置失败。请检查 MongoDB 连接和脚本中的命令。${NC}"
   fi
+  read -r -p "按 Enter 键继续..."
 }
 
 
