@@ -10,13 +10,14 @@
 - **ARL官方开源项目关闭的具体原因请看：[https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ](https://mp.weixin.qq.com/s/hM3t3lYQVqDOlrLKz3_TSQ)**
 - **ARL-NPoC（ARL核心）的最新源码备份：[https://github.com/Aabyss-Team/ARL-NPoC](https://github.com/Aabyss-Team/ARL-NPoC)**
 - **arl_file（ARL相关构建）的最新备份：[https://github.com/Aabyss-Team/arl_files](https://github.com/Aabyss-Team/arl_files)**
-- **在 `CentOS7/8` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手**
+- **在 `CentOS7/8/Rocky 8.10` 和 `Ubuntu20.04` 系统上，直接拉取运行本项目内的 `misc/setup-arl.sh` 即可安装，源码和docker安装都集成在了脚本中解放双手**
 - **Docker安装感谢 [@本间白猫](https://github.com/honmashironeko) 师傅维护的Docker镜像**
 - **ARL-Docker：[https://github.com/honmashironeko/ARL-docker](https://github.com/honmashironeko/ARL-docker)**
 - **ARL添加指纹脚本，感谢 [@msmoshang](https://github.com/msmoshang) 对本项目和ADD-ARL-Finger项目的维护**
 - **ADD-ARL-Finger：[https://github.com/msmoshang/ADD-ARL-Finger](https://github.com/msmoshang/ADD-ARL-Finger)**
 - **脚本现以支持国内服务器安装建议用源码安装，Docker安装采用Docker镜像加速的方式可能会不稳定抽风现象建议源码安装**
 - **去除自带指纹，转为自选添加提高脚本运行容错**
+- **新增控制台**
 
 **万分感谢以下为 ARL 后续维护和支持作出贡献的师傅们** :confetti_ball:
 
@@ -35,7 +36,12 @@
 **ARL安装命令如下（源码安装和Docker安装合一）**
 
 ```
+#国外
 wget https://raw.githubusercontent.com/Aabyss-Team/ARL/master/misc/setup-arl.sh
+chmod +x setup-arl.sh
+./setup-arl.sh
+#国内
+wget https://raw.gitcode.com/msmoshang/ARL/blobs/24b06ec7efb32b9be380ab01ebf505e77c7811bf/setup-arl.sh
 chmod +x setup-arl.sh
 ./setup-arl.sh
 ```
@@ -215,7 +221,13 @@ Docker环境配置文件路径 `docker/config-docker.yaml`
 
 当忘记了登录密码，可以执行下面的命令，然后使用 `admin/admin123` 就可以登录了。
 ```
+#Dockers忘记密码
 docker exec -ti arl_mongodb mongo -u admin -p admin
+use arl
+db.user.drop()
+db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') })
+#源码忘记密码
+mongo
 use arl
 db.user.drop()
 db.user.insert({ username: 'admin',  password: hex_md5('arlsalt!@#'+'admin123') })
