@@ -777,7 +777,7 @@ check_install_docker-compose_CN() {
         OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 
         case "$CPU_ARCH" in
-            x86_64)
+            "x86_64")
                 DOCKER_COMPOSE_URL="https://raw.gitcode.com/msmoshang/arl_files/blobs/72eb38523db2f2c0b9645b2597d3ed9c9e778c7e/docker-compose-${OS}-${CPU_ARCH}"
             ;;
             "arm64" | "aarch64")
