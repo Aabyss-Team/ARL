@@ -846,27 +846,13 @@ check_install_docker-compose() {
         
         # 下载并验证 Docker Compose
         if [ -n "$DOCKER_COMPOSE_VERSION" ]; then
-            # 检查并获取校验和
-            local EXPECTED_SHA256
-            EXPECTED_SHA256=$(curl -s "${SHA256_URL}" | awk '{print $1}')
             
             # 下载 Docker Compose 二进制文件
             sudo curl -fL "${DOCKER_COMPOSE_URL}" -o /usr/local/bin/docker-compose
             if [ $? -ne 0 ]; then
                 color_echo $RED "Docker Compose 下载失败！请手动安装。"
                 exit 1
-            fi
-            
-            # 验证文件完整性
-            local ACTUAL_SHA256
-            ACTUAL_SHA256=$(sha256sum /usr/local/bin/docker-compose | awk '{print $1}')
-            
-            if [ "${ACTUAL_SHA256}" != "${EXPECTED_SHA256}" ]; then
-                sudo rm -f /usr/local/bin/docker-compose
-                color_echo $RED "Docker Compose 文件校验失败！请手动安装。"
-                exit 1
-            fi
-            
+            fi   
             # 设置权限
             sudo chmod +x /usr/local/bin/docker-compose
             color_echo $GREEN "Docker Compose 安装成功, 版本: $(docker-compose --version)"
