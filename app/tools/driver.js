@@ -139,7 +139,7 @@
 				page = require('webpage').create();
 
 				page.settings.loadImages      = false;
-				page.settings.userAgent       = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36';
+				page.settings.userAgent       = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 				page.settings.resourceTimeout = resourceTimeout;
 
 				page.onError = function(message) {

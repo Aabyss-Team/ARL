@@ -284,6 +284,44 @@ install_pip36() {
     rm -f get-pip.py
   fi
 }
+#设置massdns权限
+fix_permission() {
+    local massdns_path="/opt/ARL/app/tools/massdns"
+    local phantomjs_path="/usr/bin/phantomjs"
+    
+    # 1. 检查文件是否存在
+    if [ ! -f "$massdns_path" ]; then
+        color_echo $RED "错误: massdns 文件不存在于 $massdns_path"
+        color_echo $YELLOW "请确保 ARL 已正确安装"
+        return 1
+    fi
+    if [ ! -f "$phantomjs_path" ]; then
+        color_echo $RED "错误: phantomjs 文件不存在于 $phantomjs_path"
+        color_echo $YELLOW "请确保 ARL 已正确安装"
+        return 1
+    fi
+
+    # 2. 赋予执行权限
+    if sudo chmod +x "$massdns_path"; then
+        color_echo $GREEN "massdns 执行权限已添加"
+    else
+        color_echo $RED "无法添加执行权限，请检查文件路径或权限"
+        return 1
+    fi
+    # 3. 检测执行权限
+    if [ -x "$massdns_path" ]; then
+        color_echo $GREEN "验证通过: massdns 现在可正常执行"
+    else
+        color_echo $RED "验证失败: 请手动检查 massdns 权限"
+        return 1
+    fi
+        if [ -x "$phantomjs_path" ]; then
+        color_echo $GREEN "验证通过: phantomjs 现在可正常执行"
+    else
+        color_echo $RED "验证失败: 请手动检查 phantomjs 权限"
+        return 1
+    fi
+}
 
 # 判断是否为国内网络环境 (根据能否访问 google.com)
 is_cn_env() {
@@ -294,7 +332,7 @@ is_cn_env() {
   fi
 }
 
-# 获取 MongoDB 安装源配置 (根据发行版和版本)
+# 获取 MongoDB 安装源配置 (根据发行版、版本和网络环境)
 get_mongodb_repo_config() {
     local os_id="$1"
     local os_version_id="$2"
@@ -303,12 +341,12 @@ get_mongodb_repo_config() {
     case "$os_id$os_version_id" in
         centos7|centos8|rhel8|rocky8.10)
             repo_config=$(cat <<EOF
-[mongodb-org-4.0]
+[mongodb-org-4.4]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.0/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.4/x86_64/
 gpgcheck=1
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.4.asc
 EOF
 )
             ;;
@@ -928,6 +966,8 @@ install_arl_common() {
     if [ ! -f /usr/bin/phantomjs ]; then
         color_echo $YELLOW "安装 phantomjs..."
         sudo ln -s "$(pwd)"/app/tools/phantomjs /usr/bin/phantomjs
+        sudo chmod +x /usr/bin/phantomjs
+        fix_permission
     fi
     
     # 根据系统类型配置nginx
@@ -996,7 +1036,7 @@ install_for_centos() {
 
     # 配置 MongoDB 源
     local mongodb_config=$(get_mongodb_repo_config centos 7)
-    echo "$mongodb_config" | sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo
+    echo "$mongodb_config" | sudo tee /etc/yum.repos.d/mongodb-org-4.4.repo
 
     # 安装依赖
     color_echo $YELLOW "安装依赖..."
@@ -1029,7 +1069,7 @@ install_for_centos8() {
     cd "$BASE_DIR" || exit
     # 配置 MongoDB 源
     local mongodb_config=$(get_mongodb_repo_config centos 8)
-    echo "$mongodb_config" | sudo tee /etc/yum.repos.d/mongodb-org-4.0.repo
+    echo "$mongodb_config" | sudo tee /etc/yum.repos.d/mongodb-org-4.4.repo
 
     # 配置 RabbitMQ 源
     local rabbitmq_config=$(get_rabbitmq_repo_config centos 8)
