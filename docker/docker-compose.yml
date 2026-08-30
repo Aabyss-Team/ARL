@@ -1,12 +1,9 @@
-version: '3'
-
 volumes:
   arl_db:
-    external: true
 
 services:
     web:
-        image: tophant/arl:${ARL_VERSION:-latest}
+        image: honmashironeko/arl-docker-all:latest
         container_name: arl_web
         restart: unless-stopped
         depends_on:
@@ -27,7 +24,7 @@ services:
           - TZ=Asia/Shanghai
 
     worker:
-        image: tophant/arl:${ARL_VERSION:-latest}
+        image: honmashironeko/arl-docker-all:latest
         container_name: arl_worker
         restart: unless-stopped
         depends_on:
@@ -47,7 +44,7 @@ services:
           - TZ=Asia/Shanghai
 
     scheduler:
-      image: tophant/arl:${ARL_VERSION:-latest}
+      image: honmashironeko/arl-docker-all:latest
       container_name: arl_scheduler
       restart: unless-stopped
       depends_on:
@@ -61,7 +58,7 @@ services:
         - TZ=Asia/Shanghai
 
     mongodb:
-        image: mongo:4.0.27
+        image: mongo:4.0
         container_name: arl_mongodb
         restart: always
         volumes:
@@ -74,7 +71,7 @@ services:
 
 
     rabbitmq:
-      image: rabbitmq:3.13.1-management-alpine
+      image: rabbitmq:3.13-management-alpine
       container_name: arl_rabbitmq
       restart: always
       environment:
